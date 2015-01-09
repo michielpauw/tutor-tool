@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RekenBijles</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_reken">RekenActivity</string>
+    
+	<string-array name="manipulations">
+        <item>Optellen</item>
+        <item>Aftrekken</item>
+        <item>Vermenigvuldigen</item>
+        <item>Delen</item>
+    </string-array>
+</resources>
