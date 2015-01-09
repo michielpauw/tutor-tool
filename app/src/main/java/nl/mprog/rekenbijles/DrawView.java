@@ -15,6 +15,7 @@ public class DrawView extends View {
     private static int radius;
     private static int amount;
     private static int width;
+    private static int xOriginal;
     public DrawView(Context context)
     {
         super(context);
@@ -27,10 +28,11 @@ public class DrawView extends View {
         Paint paint = new Paint();
         // Use Color.parseColor to define HTML colors
         paint.setColor(Color.parseColor("#3F51B5"));
+        x = xOriginal;
         for (int i = 0; i < amount; i++)
         {
+            x = xOriginal + i * width;
             canvas.drawCircle(x, y, radius, paint);
-            x = x + width;
         }
 
     }
@@ -53,6 +55,7 @@ public class DrawView extends View {
     public void setFirstX(int xIn)
     {
         x = xIn;
+        xOriginal = xIn;
     }
 
     public void setY(int yIn)
