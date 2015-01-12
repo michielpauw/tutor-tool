@@ -27,6 +27,8 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
     int manipulation;
     UICreator interfaceCreator;
     int blockAmount;
+    AnalyzeAnswers analyze;
+    int problemAmount = 10;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +41,15 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
 		// get the manipulation that was clicked
 		manipulation = Integer.parseInt(intent.getStringExtra("manipulation"));
 
+        // create an interfaceCreator which will create the interface dynamically
         interfaceCreator = new UICreator(this.getApplicationContext(), this);
 
-		// generate ten problems with the manipulation that was clicked
-		ProblemGenerator generator = new ProblemGenerator(manipulation, 10);
+		// generate (ten) problems with the manipulation that was clicked
+		ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
 		numbers = generator.generateNumbers();
+
+        // create an AnalyzeAnswers object, so I can analyze the answers
+        analyze = new AnalyzeAnswers(manipulation, problemAmount, numbers);
 
         createInterface();
 	}
@@ -87,12 +93,10 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
                     Toast.LENGTH_LONG).show();
             v.invalidate();
         }
-        else if(currentProblem < 9)
+        else if(currentProblem < 2 * problemAmount)
         {
             currentProblem += 2;
-            String stringNumberOne = Integer.toString(numbers[currentProblem]);
-            String stringNumberTwo = Integer.toString(numbers[currentProblem + 1]);
-            blockAmount = interfaceCreator.blockAmount(numbers[currentProblem], numbers[currentProblem + 1], manipulation);
+            analyze.enterAnswer(currentAnswer, currentProblem / 2);
             RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
             currentLayout.removeAllViews();
             createInterface();
@@ -106,7 +110,7 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
     public void createInterface()
     {
         blockAmount = interfaceCreator.blockAmount(numbers[currentProblem], numbers[currentProblem + 1], manipulation);
-
+        interfaceCreator.createProblemLayout();
         for (int i = 0; i < 10; i++)
         {
             numberButton = interfaceCreator.addNumberButton(i);

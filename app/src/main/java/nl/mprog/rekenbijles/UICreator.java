@@ -90,8 +90,8 @@ public class UICreator {
     public void createTextView(int amount, int first, int second)
     {
         blockAmount = amount;
-        int[] firstNumberDigits = numberBreaker(first);
-        int[] secondNumberDigits = numberBreaker(second);
+        int[] firstNumberDigits = Tools.numberBreaker(first);
+        int[] secondNumberDigits = Tools.numberBreaker(second);
         int width = textViewWidth;
         int height = textViewHeight;
         position_hor_first = (problemLayoutWidth - amount * width) / 2;
@@ -169,21 +169,6 @@ public class UICreator {
         problemLayout.addView(circularButton);
     }
 
-    // a piece of code I partly wrote for my nPuzzle application
-    public Spinner addNumberSpinner()
-    {
-        RelativeLayout.LayoutParams paramsSpinner = new RelativeLayout.LayoutParams(200, 250);
-        paramsSpinner.topMargin = topMargin;
-        Spinner spinner = new Spinner(activity);
-        Integer[] manipulations = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        // Application of the Array to the Spinner
-        ArrayAdapter<Integer> spinnerArrayAdapter = new ArrayAdapter<Integer>(activity, R.layout.spinner_item, manipulations);
-        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-        spinner.setAdapter(spinnerArrayAdapter);
-        root.addView(spinner, paramsSpinner);
-        return spinner;
-    }
-
     public Button addNumberButton(int number)
     {
         buttonHeight = widthScr / 5 - 2 * buttonGap;
@@ -234,13 +219,11 @@ public class UICreator {
         return button;
     }
 
-    public int blockAmount(int first, int second, int manipulation)
-    {
+    public int blockAmount(int first, int second, int manipulation) {
         double workWith;
         int result;
         double numberLength = 0.0;
-        switch (manipulation)
-        {
+        switch (manipulation) {
             case 0:
                 result = first + second;
                 manipulationString = "+";
@@ -262,51 +245,18 @@ public class UICreator {
                 manipulationString = "+";
                 break;
         }
-        if (first > second)
-        {
+        if (first > second) {
             workWith = first;
-        }
-        else
-        {
+        } else {
             workWith = second;
         }
-        if (result > workWith)
-        {
+        if (result > workWith) {
             workWith = result;
         }
-        while (workWith >= 1)
-        {
+        while (workWith >= 1) {
             workWith = workWith / 10;
             numberLength += 1;
         }
         return (int) numberLength;
-    }
-
-    public int[] numberBreaker(int number)
-    {
-        double numberLength = 0.0;
-        double numberDouble = (double) number;
-
-        while (numberDouble >= 1)
-        {
-            numberDouble = numberDouble / 10;
-            numberLength += 1;
-        }
-        numberDouble = (double) number;
-        int[] digits = new int[(int) numberLength];
-        int position = 0;
-        for (int i = 0; i < numberLength; i++)
-        {
-            int digit = 0;
-            double order = Math.pow(10.0, numberLength - 1 - i);
-            while(numberDouble >= order)
-            {
-                numberDouble = numberDouble - order;
-                digit += 1;
-            }
-            digits[position] = digit;
-            position += 1;
-        }
-        return digits;
     }
 }
