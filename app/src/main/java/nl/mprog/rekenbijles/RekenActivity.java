@@ -28,7 +28,7 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
     UICreator interfaceCreator;
     int blockAmount;
     AnalyzeAnswers analyze;
-    int problemAmount = 10;
+    int problemAmount = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
                     Toast.LENGTH_LONG).show();
             v.invalidate();
         }
-        else if(currentProblem < 2 * problemAmount)
+        else if(currentProblem < 2 * (problemAmount - 1))
         {
             currentProblem += 2;
             analyze.enterAnswer(currentAnswer, currentProblem / 2);
@@ -103,7 +103,7 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
         }
         else
         {
-
+            int[] answer = analyze.testAnalysis();
         }
     }
 

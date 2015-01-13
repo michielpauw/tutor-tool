@@ -6,13 +6,13 @@ package nl.mprog.rekenbijles;
 public class SubtractionAnalysis {
 
     private static int[] problems;
-    private static int[] answers;
+    private static int[][] answers;
     private static int[] bugs;
     private static int lengthOne;
     private static int lengthTwo;
     private static int lengthAnswer;
 
-    public SubtractionAnalysis(int[] problems_in, int[] answers_in)
+    public SubtractionAnalysis(int[] problems_in, int[][] answers_in)
     {
         problems = problems_in;
         answers = answers_in;
@@ -20,36 +20,37 @@ public class SubtractionAnalysis {
 
     public int[] analyze()
     {
-
         return bugs;
     }
 
-    public void process()
+    public int[] process()
     {
         for (int i = 0; i < answers.length; i++)
         {
-            int[] digitsAnswer = Tools.numberBreaker(answers[i]);
             int[] digitsProblemOne = Tools.numberBreaker(problems[2 * i]);
             int[] digitsProblemTwo = Tools.numberBreaker(problems[2 * i + 1]);
-            lengthOne = digitsProblemOne.length;
-            lengthTwo = digitsProblemTwo.length;
-            lengthAnswer = digitsAnswer.length;
+            int[] digitsCorrectAnswer = Tools.numberBreaker(problems[2 * i] - problems[2 * i + 1]);
+            lengthOne = digitsProblemOne.length - 1;
+            lengthTwo = digitsProblemTwo.length - 1;
 
             // doing subtraction step by step
             boolean comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo]);
             int[] borrowerOne = borrower(comparerOne, digitsProblemOne[lengthOne]);
-            int differencerFour = differencer(digitsProblemTwo[lengthTwo], borrowerOne[1]);
-            answers[lengthAnswer] = differencerFour;
+            int differencerFour = differencer(borrowerOne[1], digitsProblemTwo[lengthTwo]);
+            int[] answerAlgorithm = new int[3];
+            answerAlgorithm[2] = differencerFour;
             int[] zeroerOne = zeroer(borrowerOne[0], digitsProblemOne[lengthOne - 1]);
             boolean comparerTwo = comparer(zeroerOne[1], digitsProblemTwo[lengthTwo - 1]);
             int[] borrowerTwo = borrower(comparerTwo, zeroerOne[1]);
             int differencerThree = differencer(borrowerTwo[1], digitsProblemTwo[lengthTwo - 1]);
-            answers[lengthAnswer - 1] = differencerThree;
+            answerAlgorithm[1] = differencerThree;
             int orOne = orOperator(zeroerOne[0], borrowerTwo[0]);
             int differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne);
             int differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2]);
-            answers[lengthAnswer - 2] = differencerTwo;
+            answerAlgorithm[0] = differencerTwo;
+            return answerAlgorithm;
         }
+        return answers[0];
     }
 
     public boolean comparer(int digitOne, int digitTwo)
@@ -88,7 +89,7 @@ public class SubtractionAnalysis {
 
     public int[] zeroer(int borrow, int digit)
     {
-        int[] toReturn = new int[2]
+        int[] toReturn = new int[2];
         if (borrow == 1 && digit == 0)
         {
             toReturn[0] = 1;
@@ -111,7 +112,7 @@ public class SubtractionAnalysis {
 
     public int orOperator(int orBooleanOne, int orBooleanTwo)
     {
-        if (orBooleanOne == 1 || orBooleanTwo == 2)
+        if (orBooleanOne == 1 || orBooleanTwo == 1)
         {
             return 1;
         }

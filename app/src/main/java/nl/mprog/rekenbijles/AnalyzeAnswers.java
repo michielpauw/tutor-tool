@@ -21,4 +21,11 @@ public class AnalyzeAnswers {
     {
         answers[position] = answer;
     }
+
+    public int[] testAnalysis()
+    {
+        SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problems, answers);
+        int[] answer = subAnalysis.process();
+        return answer;
+    }
 }
