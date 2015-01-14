@@ -5,19 +5,16 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
-import android.sax.RootElement;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
  * Created by michielpauw on 06/01/15.
+ * In this class we create the entire UI of some activities. If a view should be responsive we
+ * return the view type so an listener can be created in the activity.
  */
 public class UICreator {
     private static Context context;
@@ -47,11 +44,12 @@ public class UICreator {
         context = context_in;
         activity = activity_in;
         setDisplayMetrics();
-        root = (RelativeLayout)activity.findViewById(R.id.root_layout);
+        root = (RelativeLayout) activity.findViewById(R.id.root_layout);
         createProblemLayout();
         root.setBackgroundColor(Color.parseColor("#C5CAE9"));
     }
 
+    // of course we need to know the metrics of the display
     public void setDisplayMetrics()
     {
         // get the display height and width
@@ -60,6 +58,7 @@ public class UICreator {
         widthScr = metrics.widthPixels;
     }
 
+    // some getter methods which don't need much explanation
     public int getBlockAmount()
     {
         return blockAmount;
@@ -75,18 +74,22 @@ public class UICreator {
         return heightScr;
     }
 
+    // creates a RelativeLayout on which the problems and answers can be shown
     public void createProblemLayout()
     {
         problemLayout = new RelativeLayout(activity);
         problemLayout.setBackgroundColor(Color.parseColor("#C5CAE9"));
         problemLayoutWidth = (widthScr / 3) * 2;
         problemLayoutHeight = heightScr / 3;
-        RelativeLayout.LayoutParams problemParams = new RelativeLayout.LayoutParams(problemLayoutWidth, problemLayoutHeight);
+        RelativeLayout.LayoutParams problemParams = new RelativeLayout.LayoutParams
+                (problemLayoutWidth, problemLayoutHeight);
         problemParams.topMargin = heightScr / 4;
         problemParams.leftMargin = widthScr / 8;
         root.addView(problemLayout, problemParams);
     }
 
+    // create a TextView for each digit of the problem, so the digits are aligned in a nice way,
+    // which makes the use more intuitive
     public void createTextView(int amount, int first, int second)
     {
         blockAmount = amount;
@@ -98,6 +101,8 @@ public class UICreator {
         position_ver_first = 0;
         int drawn_first = 0;
         int drawn_second = 0;
+
+        // the separator is just a +-x/ sign, to let the user know which manipulation to use
         TextView separator = new TextView(activity);
         RelativeLayout.LayoutParams paramsTextSep = new RelativeLayout.LayoutParams(width, height);
         paramsTextSep.topMargin = position_ver_first + height + 100;
@@ -106,29 +111,25 @@ public class UICreator {
         separator.setTextSize(50);
         separator.setTextColor(Color.parseColor("#E91E63"));
         problemLayout.addView(separator, paramsTextSep);
+
         // draw the numbers separately so they show up above each other
-        for (int i = 0; i < 2 * amount; i++)
-        {
+        for (int i = 0; i < 2 * amount; i++) {
             TextView block = new TextView(activity);
-            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(width - 40, height);
+            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(width - 40,
+                    height);
             paramsText.topMargin = position_ver_first + (i / amount) * height;
             paramsText.leftMargin = position_hor_first + (i % amount) * width;
-            if (i < amount)
-            {
+            if (i < amount) {
                 int length = firstNumberDigits.length;
-                if (i + length >= amount)
-                {
+                if (i + length >= amount) {
                     block.setText(Integer.toString(firstNumberDigits[drawn_first]));
-                    drawn_first ++;
+                    drawn_first++;
                 }
-            }
-            else
-            {
+            } else {
                 int length = secondNumberDigits.length;
-                if (i - amount + length >= amount)
-                {
+                if (i - amount + length >= amount) {
                     block.setText(Integer.toString(secondNumberDigits[drawn_second]));
-                    drawn_second ++;
+                    drawn_second++;
                 }
             }
             block.setTextSize(50);
@@ -140,11 +141,12 @@ public class UICreator {
         }
     }
 
-
+    // the AnswerView is a transparent TextView which can be updates by clicking on it
     public TextView createAnswerView(int amount, int position)
     {
         TextView answerView = new TextView(activity);
-        RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(textViewWidth - 40, textViewHeight);
+        RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(textViewWidth -
+                40, textViewHeight);
         paramsText.topMargin = position_ver_first + 2 * textViewHeight;
         paramsText.leftMargin = position_hor_first + position * textViewWidth;
         answerView.setBackgroundColor(Color.TRANSPARENT);
@@ -157,6 +159,7 @@ public class UICreator {
         return answerView;
     }
 
+    // this method adds the background to the answer views, so that the alignment is correct
     public void addAnswerCircles(int amount)
     {
         DrawView circularButton = new DrawView(activity);
@@ -169,18 +172,19 @@ public class UICreator {
         problemLayout.addView(circularButton);
     }
 
+    // adds the main control buttons, ten digits which can be clicked
     public Button addNumberButton(int number)
     {
         buttonHeight = widthScr / 5 - 2 * buttonGap;
-        RelativeLayout.LayoutParams paramsButton = new RelativeLayout.LayoutParams(buttonHeight, buttonHeight);
+        RelativeLayout.LayoutParams paramsButton = new RelativeLayout.LayoutParams(buttonHeight,
+                buttonHeight);
         int positionHorizontal = ((number + 9) % 5) * (buttonHeight + 10);
         int positionVertical = heightScr - 2 * buttonHeight;
-        if (number > 0 && number < 6)
-        {
+        if (number > 0 && number < 6) {
             positionVertical = heightScr - 3 * buttonHeight - 10;
         }
 
-        GradientDrawable shape =  new GradientDrawable();
+        GradientDrawable shape = new GradientDrawable();
         shape.setSize(buttonHeight, buttonHeight);
         shape.setCornerRadius(100);
         shape.setColor(Color.parseColor("#3F51B5"));
@@ -194,18 +198,16 @@ public class UICreator {
         button.setText(Integer.toString(number));
         button.setId(number);
         button.setTextColor(Color.parseColor("#FFFFFF"));
-        if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN)
-        {
+        if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
             button.setBackgroundDrawable(shape);
-        }
-        else
-        {
+        } else {
             button.setBackground(shape);
         }
         root.addView(button, paramsButton);
         return button;
     }
 
+    // create a general button
     public Button createButton(String string, int x, int y, int width, int height)
     {
         RelativeLayout.LayoutParams paramsButton = new RelativeLayout.LayoutParams(width, height);
@@ -219,7 +221,8 @@ public class UICreator {
         return button;
     }
 
-    public int blockAmount(int first, int second, int manipulation) {
+    public int blockAmount(int first, int second, int manipulation)
+    {
         double workWith;
         int result;
         double numberLength = 0.0;

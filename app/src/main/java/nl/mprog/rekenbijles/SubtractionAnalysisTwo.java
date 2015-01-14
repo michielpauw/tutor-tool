@@ -3,6 +3,14 @@ package nl.mprog.rekenbijles;
 /**
  * Created by michielpauw on 12/01/15.
  */
+
+/**
+ *
+ *
+ * WORK IN PROGRESS
+ *
+ *
+ */
 public class SubtractionAnalysisTwo {
 
     private static int[] problems;
@@ -41,8 +49,7 @@ public class SubtractionAnalysisTwo {
 
     public int[] process()
     {
-        for (int i = 0; i < answers.length; i++)
-        {
+        for (int i = 0; i < answers.length; i++) {
             digitsProblemOne = Tools.numberBreaker(problems[2 * i]);
             digitsProblemTwo = Tools.numberBreaker(problems[2 * i + 1]);
             digitsCorrectAnswer = Tools.numberBreaker(problems[2 * i] - problems[2 * i + 1]);
@@ -73,11 +80,11 @@ public class SubtractionAnalysisTwo {
     public void backwardAnalysis()
     {
         int bugIndex = 0;
-        if (answerProvided[1] != digitsCorrectAnswer[1])
-        {
+        if (answerProvided[1] != digitsCorrectAnswer[1]) {
             bugs[bugIndex] = "d_3";
             bugIndex += 1;
-            int[][] difThreePossibleInput = supposeDifferencerCorrect(borrowerTwo[1], digitsProblemTwo[lengthTwo - 1]);
+            int[][] difThreePossibleInput = supposeDifferencerCorrect(borrowerTwo[1],
+                    digitsProblemTwo[lengthTwo - 1]);
 
         }
     }
@@ -93,38 +100,32 @@ public class SubtractionAnalysisTwo {
         return -1;
     }
 
-    public int[][] supposeBorrowerCorrect(boolean correctInputOne, int correctInputTwo, int correctOutputOne, int correctOutputTwo)
+    public int[][] supposeBorrowerCorrect(boolean correctInputOne, int correctInputTwo,
+                                          int correctOutputOne, int correctOutputTwo)
     {
-        if (correctOutputOne == 0)
-        {
+        if (correctOutputOne == 0) {
             int[][] possibleWrongInput = {{0, correctInputTwo}, {1, -1}, {0, -1}};
             return possibleWrongInput;
-        }
-        else
-        {
+        } else {
             int[][] possibleWrongInput = {{1, correctInputTwo}, {0, -1}, {1, -1}};
             return possibleWrongInput;
         }
     }
 
-    public int[][] supposeComparerCorrect(int correctInputOne, int correctInputTwo, boolean correctOutput)
+    public int[][] supposeComparerCorrect(int correctInputOne, int correctInputTwo,
+                                          boolean correctOutput)
     {
-        if (correctOutput == true)
-        {
+        if (correctOutput == true) {
             int[][] possibleWrongInput = new int[correctInputTwo][];
-            for (int i = 0; i < correctInputTwo; i++)
-            {
+            for (int i = 0; i < correctInputTwo; i++) {
                 int[] wrongInput = {i, correctInputTwo};
                 possibleWrongInput[i] = wrongInput;
             }
             return possibleWrongInput;
-        }
-        else
-        {
+        } else {
             int amount = 9 - correctInputTwo;
             int[][] possibleWrongInput = new int[amount][];
-            for (int i = 0; i < amount; i++)
-            {
+            for (int i = 0; i < amount; i++) {
                 int[] wrongInput = {9 - i, correctInputTwo};
                 possibleWrongInput[i] = wrongInput;
             }
@@ -134,12 +135,9 @@ public class SubtractionAnalysisTwo {
 
     public boolean comparer(int digitOne, int digitTwo)
     {
-        if (digitOne >= digitTwo)
-        {
+        if (digitOne >= digitTwo) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -147,14 +145,11 @@ public class SubtractionAnalysisTwo {
     public int[] borrower(boolean comparer, int digitOne)
     {
         int[] toReturn = new int[2];
-        if (comparer)
-        {
+        if (comparer) {
             toReturn[0] = 0;
             toReturn[1] = digitOne;
             return toReturn;
-        }
-        else
-        {
+        } else {
             toReturn[0] = 1;
             toReturn[1] = digitOne + 10;
             return toReturn;
@@ -169,20 +164,15 @@ public class SubtractionAnalysisTwo {
     public int[] zeroer(int borrow, int digit)
     {
         int[] toReturn = new int[2];
-        if (borrow == 1 && digit == 0)
-        {
+        if (borrow == 1 && digit == 0) {
             toReturn[0] = 1;
             toReturn[1] = 9;
             return toReturn;
-        }
-        else if (borrow == 1)
-        {
+        } else if (borrow == 1) {
             toReturn[0] = 0;
             toReturn[1] = digit - 1;
             return toReturn;
-        }
-        else
-        {
+        } else {
             toReturn[0] = 0;
             toReturn[1] = digit;
             return toReturn;
@@ -191,12 +181,9 @@ public class SubtractionAnalysisTwo {
 
     public int orOperator(int orBooleanOne, int orBooleanTwo)
     {
-        if (orBooleanOne == 1 || orBooleanTwo == 1)
-        {
+        if (orBooleanOne == 1 || orBooleanTwo == 1) {
             return 1;
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }

@@ -2,6 +2,7 @@ package nl.mprog.rekenbijles;
 
 /**
  * Created by michielpauw on 08/01/15.
+ * A class which delegates each manipulation to its supposed analysis.
  */
 public class AnalyzeAnswers {
 
@@ -17,11 +18,13 @@ public class AnalyzeAnswers {
         problems = problems_in;
     }
 
+    // enter an answer array into the answers array, so I keep track of all answers
     public void enterAnswer(int[] answer, int position)
     {
         answers[position] = answer;
     }
 
+    // a method which calls my test case subtraction analysis
     public int[] testAnalysis()
     {
         SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problems, answers);
