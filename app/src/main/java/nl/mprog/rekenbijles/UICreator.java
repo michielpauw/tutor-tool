@@ -1,10 +1,12 @@
 package nl.mprog.rekenbijles;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.Button;
@@ -113,21 +115,26 @@ public class UICreator {
         problemLayout.addView(separator, paramsTextSep);
 
         // draw the numbers separately so they show up above each other
-        for (int i = 0; i < 2 * amount; i++) {
+        for (int i = 0; i < 2 * amount; i++)
+        {
             TextView block = new TextView(activity);
             RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(width - 40,
                     height);
             paramsText.topMargin = position_ver_first + (i / amount) * height;
             paramsText.leftMargin = position_hor_first + (i % amount) * width;
-            if (i < amount) {
+            if (i < amount)
+            {
                 int length = firstNumberDigits.length;
-                if (i + length >= amount) {
+                if (i + length >= amount)
+                {
                     block.setText(Integer.toString(firstNumberDigits[drawn_first]));
                     drawn_first++;
                 }
-            } else {
+            } else
+            {
                 int length = secondNumberDigits.length;
-                if (i - amount + length >= amount) {
+                if (i - amount + length >= amount)
+                {
                     block.setText(Integer.toString(secondNumberDigits[drawn_second]));
                     drawn_second++;
                 }
@@ -173,6 +180,7 @@ public class UICreator {
     }
 
     // adds the main control buttons, ten digits which can be clicked
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public Button addNumberButton(int number)
     {
         buttonHeight = widthScr / 5 - 2 * buttonGap;
@@ -180,7 +188,8 @@ public class UICreator {
                 buttonHeight);
         int positionHorizontal = ((number + 9) % 5) * (buttonHeight + 10);
         int positionVertical = heightScr - 2 * buttonHeight;
-        if (number > 0 && number < 6) {
+        if (number > 0 && number < 6)
+        {
             positionVertical = heightScr - 3 * buttonHeight - 10;
         }
 
@@ -198,9 +207,11 @@ public class UICreator {
         button.setText(Integer.toString(number));
         button.setId(number);
         button.setTextColor(Color.parseColor("#FFFFFF"));
-        if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+        if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN)
+        {
             button.setBackgroundDrawable(shape);
-        } else {
+        } else
+        {
             button.setBackground(shape);
         }
         root.addView(button, paramsButton);
@@ -226,7 +237,8 @@ public class UICreator {
         double workWith;
         int result;
         double numberLength = 0.0;
-        switch (manipulation) {
+        switch (manipulation)
+        {
             case 0:
                 result = first + second;
                 manipulationString = "+";
@@ -248,15 +260,19 @@ public class UICreator {
                 manipulationString = "+";
                 break;
         }
-        if (first > second) {
+        if (first > second)
+        {
             workWith = first;
-        } else {
+        } else
+        {
             workWith = second;
         }
-        if (result > workWith) {
+        if (result > workWith)
+        {
             workWith = result;
         }
-        while (workWith >= 1) {
+        while (workWith >= 1)
+        {
             workWith = workWith / 10;
             numberLength += 1;
         }

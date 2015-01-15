@@ -76,7 +76,8 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings)
+        {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -88,10 +89,12 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
     {
         int clicked = (Integer) v.getTag();
 
-        if (clicked >= 0 && clicked < 10) {
+        if (clicked >= 0 && clicked < 10)
+        {
             // click on a number button
             numberClicked = clicked;
-        } else if (clicked < 30) {
+        } else if (clicked < 30)
+        {
             // click on an answer view
             answerView = (TextView) v.findViewById(clicked);
             answerView.setText(Integer.toString(numberClicked));
@@ -100,15 +103,18 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
             Toast.makeText(getApplicationContext(), Arrays.toString(currentAnswer),
                     Toast.LENGTH_LONG).show();
             v.invalidate();
-        } else if (currentProblem < 2 * (problemAmount - 1)) {
+        } else if (currentProblem < 2 * (problemAmount - 1))
+        {
             // click on 'verder' button (get a new problem)
             currentProblem += 2;
             analyze.enterAnswer(currentAnswer, currentProblem / 2);
             RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
             currentLayout.removeAllViews();
             createInterface();
-        } else {
+        } else
+        {
             // if all problems have been shown
+            analyze.enterAnswer(currentAnswer, currentProblem / 2);
             int[] answer = analyze.testAnalysis();
         }
     }
@@ -119,7 +125,8 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
         blockAmount = interfaceCreator.blockAmount(numbers[currentProblem],
                 numbers[currentProblem + 1], manipulation);
         interfaceCreator.createProblemLayout();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++)
+        {
             numberButton = interfaceCreator.addNumberButton(i);
             numberButton.setTag(i);
             numberButton.setOnClickListener(this);
@@ -133,7 +140,8 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
 
         currentAnswer = new int[blockAmount];
         interfaceCreator.addAnswerCircles(blockAmount);
-        for (int i = 0; i < blockAmount; i++) {
+        for (int i = 0; i < blockAmount; i++)
+        {
             answerView = interfaceCreator.createAnswerView(blockAmount, i);
             answerView.setTag(i + 10);
             answerView.setId(i + 10);

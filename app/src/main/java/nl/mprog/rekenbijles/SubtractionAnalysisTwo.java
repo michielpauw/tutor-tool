@@ -4,18 +4,19 @@ package nl.mprog.rekenbijles;
  * Created by michielpauw on 12/01/15.
  */
 
+import java.util.Arrays;
+
 /**
- *
- *
  * WORK IN PROGRESS
- *
- *
  */
 public class SubtractionAnalysisTwo {
 
     private static int[] problems;
     private static int[][] answers;
-    private static String[] bugs = new String[20];
+    private static int bugAmount = 20;
+    private static int possibleBugs = 13;
+    private static boolean[] noBugs = new boolean[possibleBugs];
+    private static int[][] bugs = new int[bugAmount][];
     private static int lengthOne;
     private static int lengthTwo;
     private static int lengthAnswer;
@@ -24,22 +25,39 @@ public class SubtractionAnalysisTwo {
     private static int[] digitsProblemTwo;
     private static int[] digitsCorrectAnswer;
     private static int[] answerProvided;
+    private static int[] answerManipulated;
 
     private static boolean comparerOne;
-    private static int[] borrowerOne;
+    private static int borrowerFirstValueOne;
+    private static int borrowerSecondValueOne;
     private static int differencerFour;
-    private static int[] zeroerOne;
+    private static int zeroerFirstValueOne;
+    private static int zeroerSecondValueOne;
     private static boolean comparerTwo;
-    private static int[] borrowerTwo;
-    private static int differencerThree;
+    private static int borrowerFirstValueTwo;
     private static int orOne;
+    private static int borrowerSecondValueTwo;
+    private static int differencerThree;
     private static int differencerOne;
     private static int differencerTwo;
 
-    public SubtractionAnalysisTwo(int[] problems_in, int[][] answers_in)
+    private static boolean comparerBuggy;
+    private static boolean borrowerFirstBuggy;
+    private static boolean zeroerFirstBuggy;
+    private static boolean borrowerSecondBuggy;
+    private static boolean differencerBuggy;
+    private static boolean zeroerSecondBuggy;
+    private static boolean orBuggy;
+
+    public SubtractionAnalysisTwo(int[] problem_in, int[] answer_in)
     {
-        problems = problems_in;
-        answers = answers_in;
+        problems = problem_in;
+        digitsProblemOne = Tools.numberBreaker(problems[0]);
+        digitsProblemTwo = Tools.numberBreaker(problems[1]);
+        digitsCorrectAnswer = Tools.numberBreaker(problems[0] - problems[1]);
+        answerProvided = answer_in;
+        lengthOne = digitsProblemOne.length - 1;
+        lengthTwo = digitsProblemTwo.length - 1;
     }
 
 //    public int[] analyze()
@@ -47,144 +65,421 @@ public class SubtractionAnalysisTwo {
 //        return bugs;
 //    }
 
-    public int[] process()
+    public int[] processCorrect()
     {
-        for (int i = 0; i < answers.length; i++) {
-            digitsProblemOne = Tools.numberBreaker(problems[2 * i]);
-            digitsProblemTwo = Tools.numberBreaker(problems[2 * i + 1]);
-            digitsCorrectAnswer = Tools.numberBreaker(problems[2 * i] - problems[2 * i + 1]);
-            answerProvided = answers[i];
-            lengthOne = digitsProblemOne.length - 1;
-            lengthTwo = digitsProblemTwo.length - 1;
-
-            // doing subtraction step by step, to get expected outcome of each gate
-            comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo]);
-            borrowerOne = borrower(comparerOne, digitsProblemOne[lengthOne]);
-            differencerFour = differencer(borrowerOne[1], digitsProblemTwo[lengthTwo]);
-            int[] answerAlgorithm = new int[3];
-            answerAlgorithm[2] = differencerFour;
-            zeroerOne = zeroer(borrowerOne[0], digitsProblemOne[lengthOne - 1]);
-            comparerTwo = comparer(zeroerOne[1], digitsProblemTwo[lengthTwo - 1]);
-            borrowerTwo = borrower(comparerTwo, zeroerOne[1]);
-            differencerThree = differencer(borrowerTwo[1], digitsProblemTwo[lengthTwo - 1]);
-            answerAlgorithm[1] = differencerThree;
-            orOne = orOperator(zeroerOne[0], borrowerTwo[0]);
-            differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne);
-            differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2]);
-            answerAlgorithm[0] = differencerTwo;
-            return answerAlgorithm;
-        }
-        return answers[0];
+        // doing subtraction step by step, to get expected outcome of each gate
+        comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo], false);
+        borrowerFirstValueOne = borrowerFirstValue(comparerOne, false);
+        borrowerSecondValueOne = borrowerSecondValue(comparerOne, digitsProblemOne[lengthOne], false);
+        differencerFour = differencer(borrowerSecondValueOne, digitsProblemTwo[lengthTwo], false);
+        int[] answerAlgorithm = new int[3];
+        answerAlgorithm[2] = differencerFour;
+        zeroerFirstValueOne = zeroerFirstValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], false);
+        zeroerSecondValueOne = zeroerSecondValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], false);
+        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], false);
+        borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, false);
+        borrowerSecondValueTwo = borrowerSecondValue(comparerTwo, zeroerSecondValueOne, false);
+        differencerThree = differencer(borrowerSecondValueTwo, digitsProblemTwo[lengthTwo - 1], false);
+        answerAlgorithm[1] = differencerThree;
+        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, false);
+        differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne, false);
+        differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2], false);
+        answerAlgorithm[0] = differencerTwo;
+        return answerAlgorithm;
     }
 
-    public void backwardAnalysis()
+    public void setupAnalysis()
     {
-        int bugIndex = 0;
-        if (answerProvided[1] != digitsCorrectAnswer[1]) {
-            bugs[bugIndex] = "d_3";
-            bugIndex += 1;
-            int[][] difThreePossibleInput = supposeDifferencerCorrect(borrowerTwo[1],
-                    digitsProblemTwo[lengthTwo - 1]);
-
-        }
-    }
-
-    public int[][] supposeDifferencerCorrect(int correctInputOne, int correctInputTwo)
-    {
-        int[][] possibleWrongInput = {{correctInputOne, -1}, {-1, correctInputTwo}, {-1, -1}};
-        return possibleWrongInput;
-    }
-
-    public int supposeDifferencerWrong()
-    {
-        return -1;
-    }
-
-    public int[][] supposeBorrowerCorrect(boolean correctInputOne, int correctInputTwo,
-                                          int correctOutputOne, int correctOutputTwo)
-    {
-        if (correctOutputOne == 0) {
-            int[][] possibleWrongInput = {{0, correctInputTwo}, {1, -1}, {0, -1}};
-            return possibleWrongInput;
-        } else {
-            int[][] possibleWrongInput = {{1, correctInputTwo}, {0, -1}, {1, -1}};
-            return possibleWrongInput;
-        }
-    }
-
-    public int[][] supposeComparerCorrect(int correctInputOne, int correctInputTwo,
-                                          boolean correctOutput)
-    {
-        if (correctOutput == true) {
-            int[][] possibleWrongInput = new int[correctInputTwo][];
-            for (int i = 0; i < correctInputTwo; i++) {
-                int[] wrongInput = {i, correctInputTwo};
-                possibleWrongInput[i] = wrongInput;
+        boolean[] bugsProbe = new boolean[possibleBugs];
+        boolean buggy;
+        int answerLength = answerProvided.length;
+        answerManipulated = new int[answerLength];
+        for (int i = 0; i < answerLength; i++)
+        {
+            if (answerProvided[i] == digitsCorrectAnswer[i])
+            {
+                answerManipulated[i] = digitsCorrectAnswer[i];
             }
-            return possibleWrongInput;
-        } else {
-            int amount = 9 - correctInputTwo;
-            int[][] possibleWrongInput = new int[amount][];
-            for (int i = 0; i < amount; i++) {
-                int[] wrongInput = {9 - i, correctInputTwo};
-                possibleWrongInput[i] = wrongInput;
+            else
+            {
+                answerManipulated[i] = -digitsCorrectAnswer[i];
             }
-            return possibleWrongInput;
+        }
+
+        for (int i = 0; i < possibleBugs; i++)
+        {
+            System.arraycopy(noBugs, 0, bugsProbe, 0, noBugs.length);
+            bugsProbe[i] = true;
+            buggy = runAnalysis(bugsProbe);
+            if (buggy)
+            {
+            }
         }
     }
 
-    public boolean comparer(int digitOne, int digitTwo)
+    public boolean runAnalysis(boolean[] bugsProbe)
     {
-        if (digitOne >= digitTwo) {
+        // doing subtraction step by step, to get expected outcome of each gate
+        comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo], bugsProbe[0]);
+        borrowerFirstValueOne = borrowerFirstValue(comparerOne, bugsProbe[1]);
+        borrowerSecondValueOne = borrowerSecondValue(comparerOne, digitsProblemOne[lengthOne], bugsProbe[2]);
+        differencerFour = differencer(borrowerSecondValueOne, digitsProblemTwo[lengthTwo], bugsProbe[3]);
+        int[] buggyAnswer = new int[3];
+        buggyAnswer[2] = differencerFour;
+        zeroerFirstValueOne = zeroerFirstValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], bugsProbe[4]);
+        zeroerSecondValueOne = zeroerSecondValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], bugsProbe[5]);
+        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], bugsProbe[6]);
+        borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, bugsProbe[7]);
+        borrowerSecondValueTwo = borrowerSecondValue(comparerTwo, zeroerSecondValueOne, bugsProbe[8]);
+        differencerThree = differencer(borrowerSecondValueTwo, digitsProblemTwo[lengthTwo - 1], bugsProbe[9]);
+        buggyAnswer[1] = differencerThree;
+        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, bugsProbe[10]);
+        differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne, bugsProbe[11]);
+        differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2], bugsProbe[12]);
+        buggyAnswer[0] = differencerTwo;
+        boolean toReturn;
+
+        // if a gate returning a boolean value (or 0 or 1) is buggy, the result of this algorithm will
+        // be the answer given. If a gate returning an int value is buggy, the result of this algorithm
+        // will have a negative number where a wrong number was entered.
+        int length = buggyAnswer.length;
+        for (int i = 0; i < length; i++)
+        {
+            int processing = buggyAnswer[i];
+            if (processing < 0)
+            {
+                buggyAnswer[i] = -(-processing % 10);
+            } else
+            {
+                buggyAnswer[i] = processing % 10;
+            }
+        }
+        if (Arrays.equals(buggyAnswer, answerManipulated))
+        {
+            toReturn = true;
+        }
+        else if (Arrays.equals(buggyAnswer, answerProvided))
+        {
+            toReturn = true;
+        }
+        else
+        {
+            toReturn = false;
+        }
+        return toReturn;
+    }
+
+    // decide whether the number on top is greater or equal to the number below
+    public boolean comparer(int digitOne, int digitTwo, boolean buggy)
+    {
+        // if gate buggy and input buggy, the output may not be buggy
+        if (buggy)
+        {
+            comparerBuggy = true;
+            // therefore we set all values to their non-buggy state
+            if (digitOne < 0)
+            {
+                comparerBuggy = false;
+                buggy = false;
+                digitOne = -digitOne;
+            }
+            if (digitTwo < 0)
+            {
+                comparerBuggy = false;
+                buggy = false;
+                digitTwo = -digitTwo;
+            }
+        }
+        else
+        {
+            comparerBuggy = false;
+        }
+
+        // return the correct value if the program is not buggy, otherwise return opposite.
+        if ((Math.abs(digitOne) >= Math.abs(digitTwo) && !buggy) || (Math.abs(digitOne) < Math.abs(digitTwo) && buggy))
+        {
             return true;
-        } else {
+        } else
+        {
             return false;
         }
     }
 
-    public int[] borrower(boolean comparer, int digitOne)
+    // if the top number is smaller, it needs to be incremented by ten (borrow)
+    public int borrowerFirstValue(boolean comparer, boolean buggy)
     {
-        int[] toReturn = new int[2];
-        if (comparer) {
-            toReturn[0] = 0;
-            toReturn[1] = digitOne;
-            return toReturn;
-        } else {
-            toReturn[0] = 1;
-            toReturn[1] = digitOne + 10;
-            return toReturn;
+        if (buggy)
+        {
+            borrowerFirstBuggy = true;
+            if (comparerBuggy)
+            {
+                buggy = false;
+                borrowerFirstBuggy = false;
+                if (comparer)
+                {
+                    comparer = false;
+                }
+                else
+                {
+                    comparer = true;
+                }
+            }
         }
-    }
-
-    public int differencer(int digitOne, int digitTwo)
-    {
-        return digitOne - digitTwo;
-    }
-
-    public int[] zeroer(int borrow, int digit)
-    {
-        int[] toReturn = new int[2];
-        if (borrow == 1 && digit == 0) {
-            toReturn[0] = 1;
-            toReturn[1] = 9;
-            return toReturn;
-        } else if (borrow == 1) {
-            toReturn[0] = 0;
-            toReturn[1] = digit - 1;
-            return toReturn;
-        } else {
-            toReturn[0] = 0;
-            toReturn[1] = digit;
-            return toReturn;
+        else
+        {
+            borrowerFirstBuggy = false;
         }
-    }
-
-    public int orOperator(int orBooleanOne, int orBooleanTwo)
-    {
-        if (orBooleanOne == 1 || orBooleanTwo == 1) {
+        // return the correct value if the program is not buggy, otherwise return opposite
+        if ((comparer && !buggy) || (!comparer && buggy))
+        {
+            return 0;
+        } else
+        {
             return 1;
-        } else {
+        }
+    }
+
+    public int borrowerSecondValue(boolean comparer, int digitOne, boolean buggy)
+    {
+        // if the input is faulty and the gate buggy, we can assume the output may be non-buggy.
+        if (buggy)
+        {
+            if (digitOne < 0)
+            {
+                buggy = false;
+                digitOne = -digitOne;
+            }
+
+            if (comparerBuggy)
+            {
+                buggy = false;
+                if (comparer)
+                {
+                    comparer = false;
+                }
+                else
+                {
+                    comparer = true;
+                }
+            }
+        }
+
+        // return the correct value if the program is not buggy, otherwise its negative for testing
+        if ((comparer && !buggy) || (!comparer && buggy))
+        {
+            return digitOne;
+        } else if (buggy)
+        {
+            return -digitOne - 10;
+        }
+        else
+        {
+            return digitOne + 10;
+        }
+    }
+
+    public int differencer(int digitOne, int digitTwo, boolean buggy)
+    {
+        // once again, if input is faulty and gate is buggy, it may return a correct value
+        if (buggy)
+        {
+            if (digitOne < 0)
+            {
+                buggy = false;
+                digitOne = -digitOne;
+            }
+            if (digitTwo < 0)
+            {
+                buggy = false;
+                digitTwo = -digitTwo;
+            }
+        }
+
+        if (!buggy && !(digitOne < 0 || digitTwo < 0))
+        {
+            return Math.abs(digitOne) - Math.abs(digitTwo);
+        }
+        else
+        {
+            return -(Math.abs(digitOne) - Math.abs(digitTwo));
+        }
+    }
+
+    public int zeroerFirstValue(int borrow, int digit, boolean buggy)
+    {
+        if (buggy)
+        {
+            zeroerFirstBuggy = true;
+            if (borrowerFirstBuggy)
+            {
+                buggy = false;
+                borrow = (borrow + 1) % 2;
+            }
+            if (digit < 0)
+            {
+                buggy = false;
+                digit = -digit;
+            }
+        }
+        if (borrow == 1 && digit == 0 && !buggy)
+        {
+            zeroerFirstBuggy = false;
+            return 1;
+        } else if (buggy)
+        {
+            if (borrow == 1 && digit == 0)
+            {
+                return 0;
+            } else
+            {
+                return 1;
+            }
+        } else
+        {
+            zeroerFirstBuggy = false;
+            return 0;
+        }
+    }
+
+    public int zeroerSecondValue(int borrow, int digit, boolean buggy)
+    {
+        if (buggy)
+        {
+            if (borrowerFirstBuggy)
+            {
+                buggy = false;
+                borrow = (borrow + 1) % 2;
+            }
+            if (digit < 0)
+            {
+                buggy = false;
+                digit = -digit;
+            }
+        }
+
+        if (borrow == 1 && digit == 0)
+        {
+            if (!buggy)
+            {
+                return 9;
+            }
+            else
+            {
+                return -9;
+            }
+        } else if (borrow == 1)
+        {
+            if (!buggy)
+            {
+                return digit - 1;
+            }
+            else
+            {
+                return -digit + 1;
+            }
+        } else
+        {
+            if (!buggy)
+            {
+                return digit;
+            }
+            else
+            {
+                return -digit;
+            }
+        }
+    }
+
+    public int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggy)
+    {
+        if (buggy)
+        {
+            if (zeroerFirstBuggy)
+            {
+                buggy = false;
+                orBooleanOne = (orBooleanOne + 1) % 2;
+            }
+            if (borrowerFirstBuggy)
+            {
+                buggy = false;
+                orBooleanTwo = (orBooleanTwo + 1) % 2;
+            }
+        }
+        if (orBooleanOne == 1 || orBooleanTwo == 1 && !buggy)
+        {
+            return 1;
+        } else if (buggy && orBooleanOne == 0 && orBooleanTwo == 0)
+        {
+            return 1;
+        } else if (buggy && orBooleanOne == 1 || orBooleanTwo == 1)
+        {
+            return 0;
+        }
+        {
             return 0;
         }
     }
 }
+
+//    public void backwardAnalysis()
+//    {
+//        int bugIndex = 0;
+//        if (answerProvided[1] != digitsCorrectAnswer[1])
+//        {
+//            bugs[bugIndex] = "d_3";
+//            bugIndex += 1;
+//            int[][] difThreePossibleInput = supposeDifferencerCorrect(borrowerTwo[1],
+//                    digitsProblemTwo[lengthTwo - 1]);
+//
+//        }
+////    }
+//
+//    public int[][] supposeDifferencerCorrect(int correctInputOne, int correctInputTwo)
+//    {
+//        int[][] possibleWrongInput = {{correctInputOne, -1}, {-1, correctInputTwo}, {-1, -1}};
+//        return possibleWrongInput;
+//    }
+//
+//    public int supposeDifferencerWrong()
+//    {
+//        return -1;
+//    }
+//
+//    public int[][] supposeBorrowerCorrect(boolean correctInputOne, int correctInputTwo,
+//                                          int correctOutputOne, int correctOutputTwo)
+//    {
+//        if (correctOutputOne == 0)
+//        {
+//            int[][] possibleWrongInput = {{0, correctInputTwo}, {1, -1}, {0, -1}};
+//            return possibleWrongInput;
+//        } else
+//        {
+//            int[][] possibleWrongInput = {{1, correctInputTwo}, {0, -1}, {1, -1}};
+//            return possibleWrongInput;
+//        }
+//    }
+//
+//    public int[][] supposeComparerCorrect(int correctInputOne, int correctInputTwo,
+//                                          boolean correctOutput)
+//    {
+//        if (correctOutput == true)
+//        {
+//            int[][] possibleWrongInput = new int[correctInputTwo][];
+//            for (int i = 0; i < correctInputTwo; i++)
+//            {
+//                int[] wrongInput = {i, correctInputTwo};
+//                possibleWrongInput[i] = wrongInput;
+//            }
+//            return possibleWrongInput;
+//        } else
+//        {
+//            int amount = 9 - correctInputTwo;
+//            int[][] possibleWrongInput = new int[amount][];
+//            for (int i = 0; i < amount; i++)
+//            {
+//                int[] wrongInput = {9 - i, correctInputTwo};
+//                possibleWrongInput[i] = wrongInput;
+//            }
+//            return possibleWrongInput;
+//        }
+//    }

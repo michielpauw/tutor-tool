@@ -32,7 +32,8 @@ public class DrawView extends View {
         // Use Color.parseColor to define HTML colors
         paint.setColor(Color.parseColor("#3F51B5"));
         x = xOriginal;
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < amount; i++)
+        {
             x = xOriginal + i * width;
             canvas.drawCircle(x, y, radius, paint);
         }

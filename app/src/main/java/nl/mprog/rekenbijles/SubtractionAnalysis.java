@@ -5,11 +5,7 @@ package nl.mprog.rekenbijles;
  */
 
 /**
- *
- *
  * WORK IN PROGRESS
- *
- *
  */
 public class SubtractionAnalysis {
 
@@ -33,7 +29,8 @@ public class SubtractionAnalysis {
 
     public int[] process()
     {
-        for (int i = 0; i < answers.length; i++) {
+        for (int i = 0; i < answers.length; i++)
+        {
             int[] digitsProblemOne = Tools.numberBreaker(problems[2 * i]);
             int[] digitsProblemTwo = Tools.numberBreaker(problems[2 * i + 1]);
             int[] digitsCorrectAnswer = Tools.numberBreaker(problems[2 * i] - problems[2 * i + 1]);
@@ -63,9 +60,11 @@ public class SubtractionAnalysis {
 
     public boolean comparer(int digitOne, int digitTwo)
     {
-        if (digitOne >= digitTwo) {
+        if (digitOne >= digitTwo)
+        {
             return true;
-        } else {
+        } else
+        {
             return false;
         }
     }
@@ -73,11 +72,13 @@ public class SubtractionAnalysis {
     public int[] borrower(boolean comparer, int digitOne)
     {
         int[] toReturn = new int[2];
-        if (comparer) {
+        if (comparer)
+        {
             toReturn[0] = 0;
             toReturn[1] = digitOne;
             return toReturn;
-        } else {
+        } else
+        {
             toReturn[0] = 1;
             toReturn[1] = digitOne + 10;
             return toReturn;
@@ -92,15 +93,18 @@ public class SubtractionAnalysis {
     public int[] zeroer(int borrow, int digit)
     {
         int[] toReturn = new int[2];
-        if (borrow == 1 && digit == 0) {
+        if (borrow == 1 && digit == 0)
+        {
             toReturn[0] = 1;
             toReturn[1] = 9;
             return toReturn;
-        } else if (borrow == 1) {
+        } else if (borrow == 1)
+        {
             toReturn[0] = 0;
             toReturn[1] = digit - 1;
             return toReturn;
-        } else {
+        } else
+        {
             toReturn[0] = 0;
             toReturn[1] = digit;
             return toReturn;
@@ -109,9 +113,11 @@ public class SubtractionAnalysis {
 
     public int orOperator(int orBooleanOne, int orBooleanTwo)
     {
-        if (orBooleanOne == 1 || orBooleanTwo == 1) {
+        if (orBooleanOne == 1 || orBooleanTwo == 1)
+        {
             return 1;
-        } else {
+        } else
+        {
             return 0;
         }
     }

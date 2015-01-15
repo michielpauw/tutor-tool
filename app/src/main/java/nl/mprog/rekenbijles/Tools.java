@@ -12,17 +12,20 @@ public class Tools {
         double numberLength = 0.0;
         double numberDouble = (double) number;
 
-        while (numberDouble >= 1) {
+        while (numberDouble >= 1)
+        {
             numberDouble = numberDouble / 10;
             numberLength += 1;
         }
         numberDouble = (double) number;
         int[] digits = new int[(int) numberLength];
         int position = 0;
-        for (int i = 0; i < numberLength; i++) {
+        for (int i = 0; i < numberLength; i++)
+        {
             int digit = 0;
             double order = Math.pow(10.0, numberLength - 1 - i);
-            while (numberDouble >= order) {
+            while (numberDouble >= order)
+            {
                 numberDouble = numberDouble - order;
                 digit += 1;
             }
