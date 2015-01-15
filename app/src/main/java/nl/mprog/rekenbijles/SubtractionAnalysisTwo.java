@@ -14,8 +14,8 @@ public class SubtractionAnalysisTwo {
     private static int[] problems;
     private static int[][] answers;
     private static int bugAmount = 20;
-    private static int possibleBugs = 13;
-    private static boolean[] noBugs = new boolean[possibleBugs];
+    private static int amountGates = 13;
+    private static boolean[] noBugs = new boolean[amountGates];
     private static int[][] bugs = new int[bugAmount][];
     private static int lengthOne;
     private static int lengthTwo;
@@ -44,10 +44,10 @@ public class SubtractionAnalysisTwo {
     private static boolean comparerBuggy;
     private static boolean borrowerFirstBuggy;
     private static boolean zeroerFirstBuggy;
-    private static boolean borrowerSecondBuggy;
-    private static boolean differencerBuggy;
-    private static boolean zeroerSecondBuggy;
-    private static boolean orBuggy;
+
+    private static int currentAmountToTest;
+    private static int toCheckLeft = amountGates;
+    private static int[] currentGatesProbed;
 
     public SubtractionAnalysisTwo(int[] problem_in, int[] answer_in)
     {
@@ -58,6 +58,7 @@ public class SubtractionAnalysisTwo {
         answerProvided = answer_in;
         lengthOne = digitsProblemOne.length - 1;
         lengthTwo = digitsProblemTwo.length - 1;
+        currentAmountToTest = 1;
     }
 
 //    public int[] analyze()
@@ -90,8 +91,6 @@ public class SubtractionAnalysisTwo {
 
     public void setupAnalysis()
     {
-        boolean[] bugsProbe = new boolean[possibleBugs];
-        boolean buggy;
         int answerLength = answerProvided.length;
         answerManipulated = new int[answerLength];
         for (int i = 0; i < answerLength; i++)
@@ -106,15 +105,64 @@ public class SubtractionAnalysisTwo {
             }
         }
 
-        for (int i = 0; i < possibleBugs; i++)
+        boolean continueAnalysis = true;
+        boolean[] bugsProbe = new boolean[amountGates];
+        boolean buggy;
+        System.arraycopy(noBugs, 0, bugsProbe, 0, noBugs.length);
+        int[] stillToCheck = stillToCheck(-1);
+        currentGatesProbed = new int[] {-1};
+        while (continueAnalysis)
         {
-            System.arraycopy(noBugs, 0, bugsProbe, 0, noBugs.length);
-            bugsProbe[i] = true;
+            // TODO give currentGatesProbed as argument
+            // TODO be frustrated that Java lists aren't dynamical
+            bugsProbe = getProbes(stillToCheck);
             buggy = runAnalysis(bugsProbe);
             if (buggy)
             {
+                //TODO for gates probed: stillToCheck(gate)
             }
         }
+    }
+
+    public boolean[] getProbes(int[] stillToCheck)
+    {
+        boolean[] probeArray = new boolean[amountGates];
+
+        int[] toTest = new int[currentAmountToTest];
+        //TODO create a nice way to get combinations of gates that still need to be probed from the stillToCheck list
+        //TODO save this/these as currentGatesProbed. Check them, if buggy remove this/these from the stillToCHeck list.
+        //TODO After that, add them to the bug list as a unit/pair/triple... Continue until currentAmountToTest has gone
+        //TODO through all remaining options. Return the bug list, show them in a nice view and voila.
+        for (int i = currentAmountToTest - 1; i >= 0; i--)
+        {
+            if (toTest[i] < amountGates - 1)
+            {
+                toTest[i] ++;
+            }
+            else
+            {
+                toTest[i] = 0;
+            }
+        }
+        //TODO manipulate probeArray such that the booleans for the probed gates are set to right
+
+        //TODO create a way to keep track which gates are probed at the moment
+
+        return probeArray;
+    }
+
+    public int[] stillToCheck(int toRemove)
+    {
+        int[] toCheck = new int[toCheckLeft];
+
+        for (int i = 0; i < toCheckLeft; i++)
+        {
+            if (i != toRemove)
+            {
+                toCheck[i] = i;
+            }
+        }
+        return toCheck;
     }
 
     public boolean runAnalysis(boolean[] bugsProbe)

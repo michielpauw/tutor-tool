@@ -129,8 +129,8 @@
       <file leaf-file-name="SubtractionAnalysisTwo.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/nl/mprog/rekenbijles/SubtractionAnalysisTwo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.21077283" vertical-offset="1620" max-vertical-offset="7365">
-              <caret line="114" column="13" selection-start-line="114" selection-start-column="13" selection-end-line="114" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.8430913" vertical-offset="1650" max-vertical-offset="8085">
+              <caret line="134" column="102" selection-start-line="134" selection-start-column="102" selection-end-line="134" selection-end-column="102" />
               <folding />
             </state>
           </provider>
@@ -1143,7 +1143,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/nl/mprog/rekenbijles/SubtractionAnalysisTwo.java</url>
-          <line>168</line>
+          <line>216</line>
           <properties />
           <option name="timeStamp" value="214" />
         </line-breakpoint>
@@ -1336,8 +1336,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/nl/mprog/rekenbijles/SubtractionAnalysisTwo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21077283" vertical-offset="1620" max-vertical-offset="7365">
-          <caret line="114" column="13" selection-start-line="114" selection-start-column="13" selection-end-line="114" selection-end-column="13" />
+        <state vertical-scroll-proportion="0.8430913" vertical-offset="1650" max-vertical-offset="8085">
+          <caret line="134" column="102" selection-start-line="134" selection-start-column="102" selection-end-line="134" selection-end-column="102" />
           <folding />
         </state>
       </provider>
