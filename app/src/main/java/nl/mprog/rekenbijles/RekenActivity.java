@@ -100,8 +100,7 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
             answerView.setText(Integer.toString(numberClicked));
             int digit = clicked % 10;
             currentAnswer[digit] = numberClicked;
-            Toast.makeText(getApplicationContext(), Arrays.toString(currentAnswer),
-                    Toast.LENGTH_LONG).show();
+
             v.invalidate();
         } else if (currentProblem < 2 * (problemAmount - 1))
         {
@@ -115,7 +114,25 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
         {
             // if all problems have been shown
             analyze.enterAnswer(currentAnswer, currentProblem / 2);
-            int[] answer = analyze.testAnalysis();
+            int[][] bugs = analyze.testAnalysis();
+            RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
+            currentLayout.removeAllViews();
+            TextView bugsView = new TextView(this);
+            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(400,
+                    400);
+            paramsText.topMargin = 50;
+            paramsText.leftMargin = 50;
+            currentLayout.addView(bugsView, paramsText);
+            String bugsString = "";
+            for (int i = 0; i < 5; i++)
+            {
+
+                bugsString += Arrays.toString(bugs[i]) + "  ";
+
+            }
+            bugsView.setText(bugsString);
+//            Toast.makeText(getApplicationContext(), bugs,
+//                    Toast.LENGTH_LONG).show();
         }
     }
 

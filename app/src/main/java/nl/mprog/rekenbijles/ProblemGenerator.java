@@ -32,8 +32,8 @@ public class ProblemGenerator {
             {
 //                r_1 = r.nextInt(900) + 100;
 //                r_2 = r.nextInt(900) + 100;
-                r_1 = 274;
-                r_2 = 129;
+                r_1 = 803;
+                r_2 = 267;
             } while ((manipulation == 1 || manipulation == 3) && r_1 == r_2);
             // make sure the results will not be negative in case of subtraction
             if (manipulation == 1 && r_1 < r_2)

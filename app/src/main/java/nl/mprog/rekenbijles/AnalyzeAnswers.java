@@ -25,15 +25,13 @@ public class AnalyzeAnswers {
     }
 
     // a method which calls my test case subtraction analysis
-    public int[] testAnalysis()
+    public int[][] testAnalysis()
     {
         int[] problem = new int[2];
         problem[0] = problems[0];
         problem[1] = problems[1];
         SubtractionAnalysisTwo subAnalysis = new SubtractionAnalysisTwo(problem, answers[0]);
-        int[] answer = subAnalysis.processCorrect();
         subAnalysis.setupAnalysis();
-
-        return answer;
+        return subAnalysis.getBugs();
     }
 }

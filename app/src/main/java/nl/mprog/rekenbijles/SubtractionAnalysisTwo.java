@@ -48,6 +48,14 @@ public class SubtractionAnalysisTwo {
     private static int currentAmountToTest;
     private static int toCheckLeft = amountGates;
     private static int[] currentGatesProbed;
+    private static int currentlyProbedTracker;
+    private static boolean continueAnalysis = true;
+    private static int lengthToCheck;
+
+    private static int[] currentlyProbedIndex;
+    private static int currentProbedAmount;
+
+    private static boolean[] rightDigit;
 
     public SubtractionAnalysisTwo(int[] problem_in, int[] answer_in)
     {
@@ -66,60 +74,104 @@ public class SubtractionAnalysisTwo {
 //        return bugs;
 //    }
 
-    public int[] processCorrect()
+    public int[][] getBugs()
     {
-        // doing subtraction step by step, to get expected outcome of each gate
-        comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo], false);
-        borrowerFirstValueOne = borrowerFirstValue(comparerOne, false);
-        borrowerSecondValueOne = borrowerSecondValue(comparerOne, digitsProblemOne[lengthOne], false);
-        differencerFour = differencer(borrowerSecondValueOne, digitsProblemTwo[lengthTwo], false);
-        int[] answerAlgorithm = new int[3];
-        answerAlgorithm[2] = differencerFour;
-        zeroerFirstValueOne = zeroerFirstValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], false);
-        zeroerSecondValueOne = zeroerSecondValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], false);
-        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], false);
-        borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, false);
-        borrowerSecondValueTwo = borrowerSecondValue(comparerTwo, zeroerSecondValueOne, false);
-        differencerThree = differencer(borrowerSecondValueTwo, digitsProblemTwo[lengthTwo - 1], false);
-        answerAlgorithm[1] = differencerThree;
-        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, false);
-        differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne, false);
-        differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2], false);
-        answerAlgorithm[0] = differencerTwo;
-        return answerAlgorithm;
+        return bugs;
     }
 
     public void setupAnalysis()
     {
         int answerLength = answerProvided.length;
         answerManipulated = new int[answerLength];
+        rightDigit = new boolean[3];
         for (int i = 0; i < answerLength; i++)
         {
             if (answerProvided[i] == digitsCorrectAnswer[i])
             {
                 answerManipulated[i] = digitsCorrectAnswer[i];
+                rightDigit[i] = true;
             }
             else
             {
                 answerManipulated[i] = -digitsCorrectAnswer[i];
+                rightDigit[i] = false;
             }
         }
 
-        boolean continueAnalysis = true;
+
         boolean[] bugsProbe = new boolean[amountGates];
         boolean buggy;
         System.arraycopy(noBugs, 0, bugsProbe, 0, noBugs.length);
-        int[] stillToCheck = stillToCheck(-1);
+        int[] stillToCheck = stillToCheck(-1, new int[amountGates]);
         currentGatesProbed = new int[] {-1};
+        int currentBug = 0;
+        currentlyProbedTracker = 0;
+        currentlyProbedIndex = new int[] {0};
+        currentProbedAmount = 0;
+        lengthToCheck = amountGates;
+        int bugsFound = 0;
         while (continueAnalysis)
         {
             // TODO give currentGatesProbed as argument
-            // TODO be frustrated that Java lists aren't dynamical
+            // TODO be frustrated that Java arrays aren't dynamical
             bugsProbe = getProbes(stillToCheck);
-            buggy = runAnalysis(bugsProbe);
-            if (buggy)
+            if (runAnalysis(bugsProbe))
             {
-                //TODO for gates probed: stillToCheck(gate)
+                int amountGatesBuggy = currentGatesProbed.length;
+
+                //TODO MAKE THIS PART MUCH NICER, VERY EASY WAY OUT! Make switch statement in
+                //TODO separate method.
+                for (int i = 0; i < amountGatesBuggy; i++)
+                {
+                    if (currentGatesProbed[i] == 7)
+                    {
+                        toCheckLeft --;
+                        currentlyProbedIndex[currentProbedAmount] --;
+                        stillToCheck = stillToCheck(8, stillToCheck);
+                    }
+                    else if (currentGatesProbed[i] == 8)
+                    {
+                        toCheckLeft --;
+                        currentlyProbedIndex[currentProbedAmount] --;
+                        stillToCheck = stillToCheck(7, stillToCheck);
+                    }
+                    else if (currentGatesProbed[i] == 2)
+                    {
+                        toCheckLeft --;
+                        currentlyProbedIndex[currentProbedAmount] --;
+                        stillToCheck = stillToCheck(1, stillToCheck);
+                    }
+                    else if (currentGatesProbed[i] == 1)
+                    {
+                        toCheckLeft --;
+                        currentlyProbedIndex[currentProbedAmount] --;
+                        stillToCheck = stillToCheck(2, stillToCheck);
+                    }
+                    else if (currentGatesProbed[i] == 4)
+                    {
+                        toCheckLeft --;
+                        currentlyProbedIndex[currentProbedAmount] --;
+                        stillToCheck = stillToCheck(5, stillToCheck);
+                    }
+                    else if (currentGatesProbed[i] == 5)
+                    {
+                        toCheckLeft --;
+                        currentlyProbedIndex[currentProbedAmount] --;
+                        stillToCheck = stillToCheck(4, stillToCheck);
+                    }
+                    toCheckLeft --;
+                    stillToCheck = stillToCheck(currentGatesProbed[i], stillToCheck);
+                }
+                int[] copyOfGates = new int[currentGatesProbed.length];
+                System.arraycopy(currentGatesProbed, 0, copyOfGates, 0, currentGatesProbed.length);
+                bugs[currentBug] = copyOfGates;
+                currentBug ++;
+                bugsFound++;
+            }
+            else
+            {
+//                currentlyProbedTracker ++;
+                currentlyProbedIndex[currentProbedAmount] ++;
             }
         }
     }
@@ -129,37 +181,107 @@ public class SubtractionAnalysisTwo {
         boolean[] probeArray = new boolean[amountGates];
 
         int[] toTest = new int[currentAmountToTest];
-        //TODO create a nice way to get combinations of gates that still need to be probed from the stillToCheck list
-        //TODO save this/these as currentGatesProbed. Check them, if buggy remove this/these from the stillToCHeck list.
-        //TODO After that, add them to the bug list as a unit/pair/triple... Continue until currentAmountToTest has gone
-        //TODO through all remaining options. Return the bug list, show them in a nice view and voila.
-        for (int i = currentAmountToTest - 1; i >= 0; i--)
+
+        boolean appendGate = false;
+        boolean reachedMax = false;
+
+        int i = currentlyProbedIndex.length - 1;
+        // if the rightmost column has the highest remaining gate as entry, increase the gate
+        // number of the column to its left.
+        while (currentlyProbedIndex[i] > stillToCheck.length - 1)
         {
-            if (toTest[i] < amountGates - 1)
+            // if there is a column to its left which does not have the highest gate number as an
+            // entry, increase this value and set the value of the rightmost column to a low entry.
+            if (i > 0)
             {
-                toTest[i] ++;
+                appendGate = false;
+                reachedMax = false;
+                int lengthPrevious = currentlyProbedIndex[i - 1];
+//                if (lengthPrevious < stillToCheck.length)
+//                {
+//                    int indexToStartFrom =  lengthPrevious + 1;
+//                    currentlyProbedIndex[i] = indexToStartFrom;
+//                    currentlyProbedIndex[i - 1] ++;
+//                }
+                int k = 0;
+                while (lengthPrevious >= stillToCheck.length && k < i)
+                {
+                    lengthPrevious = currentlyProbedIndex[i - k];
+                    k++;
+                }
+
+                int indexToStartFrom =  lengthPrevious + k;
+                if (indexToStartFrom >= stillToCheck.length)
+                {
+                    continueAnalysis = false;
+                    break;
+                }
+                currentlyProbedIndex[i] = indexToStartFrom;
+                currentlyProbedIndex[i - 1] ++;
+
+                // decrease i, to check whether the column to its left does not contain the highest
+                // remaining gate already.
+                i--;
             }
             else
             {
-                toTest[i] = 0;
+                // otherwise, we need to append a new gate to be probed.
+                appendGate = true;
+                lengthToCheck =  stillToCheck.length;
+                break;
             }
         }
-        //TODO manipulate probeArray such that the booleans for the probed gates are set to right
+        if (!appendGate && !reachedMax)
+        {
+//            currentlyProbedIndex[i] ++;
+            for (int j = 0; j < currentlyProbedIndex.length; j++)
+            {
+                currentGatesProbed[j] = stillToCheck[currentlyProbedIndex[j]];
+            }
+        }
+        else if (appendGate)
+        {
+            currentProbedAmount ++;
+            currentGatesProbed = Arrays.copyOf(currentGatesProbed, currentGatesProbed.length + 1);
+            currentlyProbedIndex = Arrays.copyOf(currentlyProbedIndex, currentlyProbedIndex.length + 1);
+            for (int j = 0; j < currentGatesProbed.length; j++)
+            {
+                if (stillToCheck.length == j)
+                {
+                    continueAnalysis = false;
+                    break;
+                }
+                currentlyProbedIndex[j] = j;
+                currentGatesProbed[j] = stillToCheck[j];
+            }
+
+        }
+        for (int j = 0; j < currentGatesProbed.length; j++)
+        {
+            probeArray[currentGatesProbed[j]] = true;
+        }
 
         //TODO create a way to keep track which gates are probed at the moment
 
         return probeArray;
     }
 
-    public int[] stillToCheck(int toRemove)
+    public int[] stillToCheck(int toRemove, int[] previousToCheck)
     {
         int[] toCheck = new int[toCheckLeft];
 
-        for (int i = 0; i < toCheckLeft; i++)
+        int lengthPrevious = previousToCheck.length;
+        int positionNew = 0;
+        for (int i = 0; i < lengthPrevious; i++)
         {
-            if (i != toRemove)
+            if (toRemove == -1)
             {
                 toCheck[i] = i;
+            }
+            else if (previousToCheck[i] != toRemove)
+            {
+                toCheck[positionNew] = previousToCheck[i];
+                positionNew ++;
             }
         }
         return toCheck;
@@ -191,6 +313,8 @@ public class SubtractionAnalysisTwo {
         // be the answer given. If a gate returning an int value is buggy, the result of this algorithm
         // will have a negative number where a wrong number was entered.
         int length = buggyAnswer.length;
+
+        boolean[] rightDigitsAnalysis = new boolean[3];
         for (int i = 0; i < length; i++)
         {
             int processing = buggyAnswer[i];
@@ -202,6 +326,24 @@ public class SubtractionAnalysisTwo {
                 buggyAnswer[i] = processing % 10;
             }
         }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (buggyAnswer[i] == digitsCorrectAnswer[i])
+            {
+                rightDigitsAnalysis[i] = true;
+            }
+            else
+            {
+                rightDigitsAnalysis[i] = false;
+            }
+        }
+
+        if (rightDigitsAnalysis == rightDigit)
+        {
+            return true;
+        }
+
         if (Arrays.equals(buggyAnswer, answerManipulated))
         {
             toReturn = true;
@@ -530,4 +672,27 @@ public class SubtractionAnalysisTwo {
 //            }
 //            return possibleWrongInput;
 //        }
+//    }
+
+//    public int[] processCorrect()
+//    {
+//        // doing subtraction step by step, to get expected outcome of each gate
+//        comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo], false);
+//        borrowerFirstValueOne = borrowerFirstValue(comparerOne, false);
+//        borrowerSecondValueOne = borrowerSecondValue(comparerOne, digitsProblemOne[lengthOne], false);
+//        differencerFour = differencer(borrowerSecondValueOne, digitsProblemTwo[lengthTwo], false);
+//        int[] answerAlgorithm = new int[3];
+//        answerAlgorithm[2] = differencerFour;
+//        zeroerFirstValueOne = zeroerFirstValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], false);
+//        zeroerSecondValueOne = zeroerSecondValue(borrowerFirstValueOne, digitsProblemOne[lengthOne - 1], false);
+//        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], false);
+//        borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, false);
+//        borrowerSecondValueTwo = borrowerSecondValue(comparerTwo, zeroerSecondValueOne, false);
+//        differencerThree = differencer(borrowerSecondValueTwo, digitsProblemTwo[lengthTwo - 1], false);
+//        answerAlgorithm[1] = differencerThree;
+//        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, false);
+//        differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne, false);
+//        differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2], false);
+//        answerAlgorithm[0] = differencerTwo;
+//        return answerAlgorithm;
 //    }
