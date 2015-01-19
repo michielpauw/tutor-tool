@@ -58,7 +58,7 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id)
     {
-        Intent intent = new Intent(this, RekenActivity.class);
+        Intent intent = new Intent(this, ProblemActivity.class);
         String manipulation = Integer.toString(position);
         intent.putExtra("manipulation", manipulation);
         startActivity(intent);

@@ -15,11 +15,10 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Arrays;
 
-public class RekenActivity extends ActionBarActivity implements View.OnClickListener {
+public class ProblemActivity extends ActionBarActivity implements View.OnClickListener {
 
     Spinner spinner;
     Button numberButton;
@@ -124,15 +123,13 @@ public class RekenActivity extends ActionBarActivity implements View.OnClickList
             paramsText.leftMargin = 50;
             currentLayout.addView(bugsView, paramsText);
             String bugsString = "";
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < bugs.length; i++)
             {
 
                 bugsString += Arrays.toString(bugs[i]) + "  ";
 
             }
             bugsView.setText(bugsString);
-//            Toast.makeText(getApplicationContext(), bugs,
-//                    Toast.LENGTH_LONG).show();
         }
     }
 

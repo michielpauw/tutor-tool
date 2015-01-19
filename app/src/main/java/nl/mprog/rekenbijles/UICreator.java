@@ -95,8 +95,8 @@ public class UICreator {
     public void createTextView(int amount, int first, int second)
     {
         blockAmount = amount;
-        int[] firstNumberDigits = Tools.numberBreaker(first);
-        int[] secondNumberDigits = Tools.numberBreaker(second);
+        int[] firstNumberDigits = Tools.numberBreaker(first, 0);
+        int[] secondNumberDigits = Tools.numberBreaker(second, 0);
         int width = textViewWidth;
         int height = textViewHeight;
         position_hor_first = (problemLayoutWidth - amount * width) / 2;

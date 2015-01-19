@@ -7,18 +7,31 @@ package nl.mprog.rekenbijles;
 public class Tools {
     // a method which takes an n-digit number and breaks it into an array of length n, each
     // entry containing a digit
-    static int[] numberBreaker(int number)
+    static int[] numberBreaker(int number, int expectedLength)
     {
         double numberLength = 0.0;
         double numberDouble = (double) number;
-
+        int difference = 0;
+        int[] digits;
         while (numberDouble >= 1)
         {
             numberDouble = numberDouble / 10;
             numberLength += 1;
         }
         numberDouble = (double) number;
-        int[] digits = new int[(int) numberLength];
+        if (expectedLength == 0)
+        {
+            digits = new int[(int) numberLength];
+        } else
+        {
+            digits = new int[expectedLength];
+            difference = expectedLength - (int) numberLength;
+            for (int i = 0; i < difference; i++)
+            {
+                digits[i] = 0;
+            }
+        }
+
         int position = 0;
         for (int i = 0; i < numberLength; i++)
         {
@@ -29,7 +42,7 @@ public class Tools {
                 numberDouble = numberDouble - order;
                 digit += 1;
             }
-            digits[position] = digit;
+            digits[position + difference] = digit;
             position += 1;
         }
         return digits;

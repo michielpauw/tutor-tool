@@ -30,8 +30,8 @@ public class AnalyzeAnswers {
         int[] problem = new int[2];
         problem[0] = problems[0];
         problem[1] = problems[1];
-        SubtractionAnalysisTwo subAnalysis = new SubtractionAnalysisTwo(problem, answers[0]);
-        subAnalysis.setupAnalysis();
+        SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers[0]);
+        subAnalysis.runAnalysis();
         return subAnalysis.getBugs();
     }
 }
