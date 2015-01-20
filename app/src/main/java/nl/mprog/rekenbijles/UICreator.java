@@ -114,7 +114,7 @@ public class UICreator {
         separator.setTextColor(Color.parseColor("#E91E63"));
         problemLayout.addView(separator, paramsTextSep);
 
-        // draw the numbers separately so they show up above each other
+        // draw the problems separately so they show up above each other
         for (int i = 0; i < 2 * amount; i++)
         {
             TextView block = new TextView(activity);

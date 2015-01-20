@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="nl.mprog.rekenbijles.RekenActivity"
+            android:name="nl.mprog.rekenbijles.ProblemActivity"
             android:label="@string/title_activity_reken"
             android:theme="@style/RekenTheme" >
         </activity>

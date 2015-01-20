@@ -11,7 +11,7 @@ public class FindBugs {
     private static int[] problems;
     private static int[][] answers;
     private static int bugAmount = 20;
-    private static int amountGates = 16;
+    private static int amountGates = 13;
     private static boolean[] noBugs = new boolean[amountGates];
     private static int[][] bugs = new int[bugAmount][];
 
@@ -78,6 +78,7 @@ public class FindBugs {
 
         bugsProbe = new boolean[amountGates];
         System.arraycopy(noBugs, 0, bugsProbe, 0, noBugs.length);
+        toCheckLeft = amountGates;
         stillToCheck = stillToCheck(-1, new int[amountGates]);
         currentGatesProbed = new int[] {-1};
         currentBug = 0;
@@ -90,7 +91,7 @@ public class FindBugs {
     {
         // the chance of finding five bugs responsible for a wrong answer is small, and it saves
         // processing time to not consider bugs of five gates or more
-        if (currentProbedAmount == 5)
+        if (currentProbedAmount == 5 || !continueAnalysis)
         {
             return false;
         }
@@ -99,7 +100,7 @@ public class FindBugs {
         if (buggy)
         {
             int amountGatesBuggy = currentGatesProbed.length;
-            stillToCheck = removeEntireGate(amountGatesBuggy, stillToCheck, bugsProbe);
+            stillToCheck = removeGate(amountGatesBuggy, stillToCheck, bugsProbe);
             int[] copyOfGates = new int[currentGatesProbed.length];
             System.arraycopy(currentGatesProbed, 0, copyOfGates, 0, currentGatesProbed.length);
             // append the bug to the bugs array
@@ -113,11 +114,11 @@ public class FindBugs {
     }
 
     // change the index of which gate should be probed from the stillToCheck list
-    public void changeIndex(int amountGates, int change)
+    public void changeIndex(int amountGates)
     {
         for (int i = 0; i < amountGates; i++)
         {
-            currentlyProbedIndex[i] += change;
+            currentlyProbedIndex[i] = currentlyProbedIndex[0] + i;
         }
     }
 
@@ -206,19 +207,19 @@ public class FindBugs {
         for (int j = 0; j < currentGatesProbed.length; j++)
         {
             probeArray[currentGatesProbed[j]] = true;
-            if (currentGatesProbed[j] == 13)
-            {
-                probeArray[1] = true;
-                probeArray[2] = true;
-            } else if (currentGatesProbed[j] == 14)
-            {
-                probeArray[4] = true;
-                probeArray[5] = true;
-            } else if (currentGatesProbed[j] == 15)
-            {
-                probeArray[7] = true;
-                probeArray[8] = true;
-            }
+//            if (currentGatesProbed[j] == 13)
+//            {
+//                probeArray[1] = true;
+//                probeArray[2] = true;
+//            } else if (currentGatesProbed[j] == 14)
+//            {
+//                probeArray[4] = true;
+//                probeArray[5] = true;
+//            } else if (currentGatesProbed[j] == 15)
+//            {
+//                probeArray[7] = true;
+//                probeArray[8] = true;
+//            }
         }
         // return the boolean values for each gate: true means it's buggy
         return probeArray;
@@ -248,86 +249,121 @@ public class FindBugs {
     // because some gates have more than one output, I split the operations of that gate. Nonethe-
     // less, if a part of that gate turns out to be buggy, I should remove both operations from
     // that gate.
-    public int[] removeEntireGate(int amountGatesBuggy, int[] stillToCheck, boolean[] bugsProbe)
+    public int[] removeGate(int amountGatesBuggy, int[] stillToCheck, boolean[] bugsProbe)
     {
         int length = bugsProbe.length;
         int removed = 0;
         boolean changedIndex = false;
+
         for (int i = length - 1; i >= 0; i--)
         {
             if (bugsProbe[i] && removed < amountGatesBuggy)
             {
                 removed++;
                 toCheckLeft--;
-                if (!changedIndex)
-                {
-                    changeIndex(amountGatesBuggy, -1);
-                    changedIndex = true;
-                }
+                changeIndex(amountGatesBuggy);
                 stillToCheck = stillToCheck(i, stillToCheck);
-                switch (i)
-                {
-                    case 1:
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(2, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(13, stillToCheck);
-                        break;
-                    case 2:
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(1, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(13, stillToCheck);
-                        changeIndex(amountGatesBuggy, -1);
-                        break;
-                    case 4:
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(5, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(14, stillToCheck);
-                        break;
-                    case 5:
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(4, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(14, stillToCheck);
-                        changeIndex(amountGatesBuggy, -1);
-                        break;
-                    case 7:
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(8, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(15, stillToCheck);
-                        break;
-                    case 8:
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(7, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(15, stillToCheck);
-                        changeIndex(amountGatesBuggy, -1);
-                        break;
-                    case 13:
-                        stillToCheck = stillToCheck(1, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(2, stillToCheck);
-                        changeIndex(amountGatesBuggy, -2);
-                        break;
-                    case 14:
-                        stillToCheck = stillToCheck(4, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(5, stillToCheck);
-                        changeIndex(amountGatesBuggy, -2);
-                        break;
-                    case 15:
-                        stillToCheck = stillToCheck(8, stillToCheck);
-                        toCheckLeft--;
-                        stillToCheck = stillToCheck(9, stillToCheck);
-                        changeIndex(amountGatesBuggy, -2);
-                    default:
-                        break;
-                }
             }
         }
         return stillToCheck;
     }
+//
+//    public void setOthersFalse(int gate)
+//    {
+//        switch (gate)
+//        {
+//            case 13:
+//                bugsProbe[1] = false;
+//                bugsProbe[2] = false;
+//                bugsProbe[13] = false;
+//                break;
+//            case 14:
+//                bugsProbe[4] = false;
+//                bugsProbe[5] = false;
+//                bugsProbe[14] = false;
+//                break;
+//            case 15:
+//                bugsProbe[7] = false;
+//                bugsProbe[8] = false;
+//                bugsProbe[15] = false;
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+
+//    switch (i)
+//                {
+//                    case 1:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(2, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(13, stillToCheck);
+//                        setOthersFalse(13);
+//                        break;
+//                    case 2:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(1, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(13, stillToCheck);
+//                        changeIndex(amountGatesBuggy, -1);
+//                        setOthersFalse(13);
+//                        break;
+//                    case 4:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(5, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(14, stillToCheck);
+//                        setOthersFalse(14);
+//                        break;
+//                    case 5:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(4, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(14, stillToCheck);
+//                        setOthersFalse(14);
+//                        changeIndex(amountGatesBuggy, -1);
+//                        break;
+//                    case 7:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(8, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(15, stillToCheck);
+//                        setOthersFalse(15);
+//                        break;
+//                    case 8:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(7, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(15, stillToCheck);
+//                        changeIndex(amountGatesBuggy, -1);
+//                        setOthersFalse(15);
+//                        break;
+//                    case 13:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(1, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(2, stillToCheck);
+//                        changeIndex(amountGatesBuggy, -2);
+//                        setOthersFalse(13);
+//                        break;
+//                    case 14:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(4, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(5, stillToCheck);
+//                        changeIndex(amountGatesBuggy, -2);
+//                        setOthersFalse(14);
+//                        break;
+//                    case 15:
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(8, stillToCheck);
+//                        toCheckLeft--;
+//                        stillToCheck = stillToCheck(7, stillToCheck);
+//                        changeIndex(amountGatesBuggy, -2);
+//                        setOthersFalse(15);
+//                        break;
+//                    default:
+//                        break;
+//                }
 }

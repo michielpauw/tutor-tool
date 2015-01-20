@@ -27,12 +27,12 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     TextView answerView;
     int[] currentAnswer;
     int currentProblem = 0;
-    int[] numbers;
+    int[][] problems;
     int manipulation;
     UICreator interfaceCreator;
     int blockAmount;
     AnalyzeAnswers analyze;
-    int problemAmount = 1;
+    int problemAmount = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,10 +51,10 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
 
         // generate (ten) problems with the manipulation that was clicked
         ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
-        numbers = generator.generateNumbers();
+        problems = generator.generateNumbers();
 
         // create an AnalyzeAnswers object, so I can analyze the answers
-        analyze = new AnalyzeAnswers(manipulation, problemAmount, numbers);
+        analyze = new AnalyzeAnswers(manipulation, problemAmount, problems);
 
         createInterface();
     }
@@ -101,19 +101,19 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             currentAnswer[digit] = numberClicked;
 
             v.invalidate();
-        } else if (currentProblem < 2 * (problemAmount - 1))
+        } else if (currentProblem < problemAmount - 1)
         {
             // click on 'verder' button (get a new problem)
-            currentProblem += 2;
-            analyze.enterAnswer(currentAnswer, currentProblem / 2);
+            analyze.enterAnswer(currentAnswer, currentProblem);
+            currentProblem ++;
             RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
             currentLayout.removeAllViews();
             createInterface();
         } else
         {
             // if all problems have been shown
-            analyze.enterAnswer(currentAnswer, currentProblem / 2);
-            int[][] bugs = analyze.testAnalysis();
+            analyze.enterAnswer(currentAnswer, currentProblem);
+            int[][][] bugs = analyze.analysis();
             RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
             currentLayout.removeAllViews();
             TextView bugsView = new TextView(this);
@@ -136,8 +136,8 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     // a method that creates the entire UI by calling methods from UICreator.
     public void createInterface()
     {
-        blockAmount = interfaceCreator.blockAmount(numbers[currentProblem],
-                numbers[currentProblem + 1], manipulation);
+        blockAmount = interfaceCreator.blockAmount(problems[currentProblem][0],
+                problems[currentProblem][1], manipulation);
         interfaceCreator.createProblemLayout();
         for (int i = 0; i < 10; i++)
         {
@@ -149,8 +149,8 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         continueButton = interfaceCreator.createButton("Verder", widthScr - 500, 0, 400, 150);
         continueButton.setTag(30);
         continueButton.setOnClickListener(this);
-        interfaceCreator.createTextView(blockAmount, numbers[currentProblem],
-                numbers[currentProblem + 1]);
+        interfaceCreator.createTextView(blockAmount, problems[currentProblem][0],
+                problems[currentProblem][1]);
 
         currentAnswer = new int[blockAmount];
         interfaceCreator.addAnswerCircles(blockAmount);

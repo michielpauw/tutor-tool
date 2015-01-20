@@ -55,7 +55,7 @@ category#android.intent.category.LAUNCHER
 ADDED from AndroidManifest.xml:22:17
 	android:name
 		ADDED from AndroidManifest.xml:22:27
-activity#nl.mprog.rekenbijles.RekenActivity
+activity#nl.mprog.rekenbijles.ProblemActivity
 ADDED from AndroidManifest.xml:25:9
 	android:label
 		ADDED from AndroidManifest.xml:27:13

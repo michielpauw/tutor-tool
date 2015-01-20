@@ -8,10 +8,10 @@ public class AnalyzeAnswers {
 
     private static int manipulation;
     private static int[][] answers;
-    private static int[] problems;
+    private static int[][] problems;
     private static int[] bugs;
 
-    public AnalyzeAnswers(int manipulation_in, int answer_amount, int[] problems_in)
+    public AnalyzeAnswers(int manipulation_in, int answer_amount, int[][] problems_in)
     {
         manipulation = manipulation_in;
         answers = new int[answer_amount][];
@@ -28,10 +28,24 @@ public class AnalyzeAnswers {
     public int[][] testAnalysis()
     {
         int[] problem = new int[2];
-        problem[0] = problems[0];
-        problem[1] = problems[1];
+        problem = problems[0];
         SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers[0]);
         subAnalysis.runAnalysis();
         return subAnalysis.getBugs();
+    }
+
+    public int[][][] analysis()
+    {
+        int amount = answers.length;
+        int[][][] allBugs = new int[amount][][];
+        for (int i = 0; i < amount; i++)
+        {
+            int[] problem = new int[2];
+            problem = problems[i];
+            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers[i]);
+            subAnalysis.runAnalysis();
+            allBugs[i] = subAnalysis.getBugs();
+        }
+        return allBugs;
     }
 }
