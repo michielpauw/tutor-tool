@@ -41,7 +41,12 @@ public class SubtractionAnalysis extends FindBugs {
         while (continueAnalysis)
         {
             // get the boolean values of the gates, if true a gate is buggy
-            bugsProbe = getProbes(stillToCheck);
+            bugsProbe = getProbes();
+            if (bugsProbe.length == 0)
+            {
+                continueAnalysis = false;
+                break;
+            }
             continueAnalysis = analyseSteps(subtractionSteps(bugsProbe));
         }
     }
