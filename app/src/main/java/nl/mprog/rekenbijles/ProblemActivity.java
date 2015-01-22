@@ -11,14 +11,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ProblemActivity extends ActionBarActivity implements View.OnClickListener {
+public class ProblemActivity extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener{
 
     Spinner spinner;
     Button numberButton;
@@ -30,9 +33,15 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     int[][] problems;
     int manipulation;
     UICreator interfaceCreator;
-    int blockAmount;
     AnalyzeAnswers analyze;
-    int problemAmount = 3;
+    int problemAmount = 10;
+    int blockAmount = 3;
+    int[][] bugs;
+    float[] ratio;
+    String[] bugsString;
+    ArrayList<Integer> occurrences;
+    int highlighted;
+    int moreInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -113,31 +122,21 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         {
             // if all problems have been shown
             analyze.enterAnswer(currentAnswer, currentProblem);
-            int[][][] bugs = analyze.analysis();
-            RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
-            currentLayout.removeAllViews();
-            TextView bugsView = new TextView(this);
-            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(400,
-                    400);
-            paramsText.topMargin = 50;
-            paramsText.leftMargin = 50;
-            currentLayout.addView(bugsView, paramsText);
-            String bugsString = "";
-            for (int i = 0; i < bugs.length; i++)
-            {
-
-                bugsString += Arrays.toString(bugs[i]) + "  ";
-
-            }
-            bugsView.setText(bugsString);
+            analyze.analysis();
+            ratio = analyze.getRatio();
+            bugs = analyze.getSortedBugs();
+            bugsString = analyze.getBugsString(bugs);
+            occurrences = analyze.getOccurrences();
+            createHypothesisInterface();
+            int i = 0;
         }
     }
 
     // a method that creates the entire UI by calling methods from UICreator.
     public void createInterface()
     {
-        blockAmount = interfaceCreator.blockAmount(problems[currentProblem][0],
-                problems[currentProblem][1], manipulation);
+//        blockAmount = Tools.blockAmount(problems[currentProblem][0],
+//                problems[currentProblem][1], manipulation);
         interfaceCreator.createProblemLayout();
         for (int i = 0; i < 10; i++)
         {
@@ -150,7 +149,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         continueButton.setTag(30);
         continueButton.setOnClickListener(this);
         interfaceCreator.createTextView(blockAmount, problems[currentProblem][0],
-                problems[currentProblem][1]);
+                problems[currentProblem][1], manipulation);
 
         currentAnswer = new int[blockAmount];
         interfaceCreator.addAnswerCircles(blockAmount);
@@ -162,4 +161,42 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             answerView.setOnClickListener(this);
         }
     }
+
+    public void createHypothesisInterface()
+    {
+        RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
+        currentLayout.removeAllViews();
+
+        interfaceCreator.addHistogramView();
+        interfaceCreator.addHistogram(ratio, highlighted);
+        interfaceCreator.addBugLayout();
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.bug_list_item,
+                bugsString);
+        AdapterView adapterView = interfaceCreator.addListView(adapter);
+        adapterView.setOnItemClickListener(this);
+        adapterView.setOnItemLongClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+    {
+        highlighted = i;
+        createHypothesisInterface();
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
+    {
+        moreInfo = i;
+        createMoreInfoInterface();
+        return false;
+    }
+
+    public void createMoreInfoInterface()
+    {
+        RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
+        currentLayout.removeAllViews();
+    }
+
 }

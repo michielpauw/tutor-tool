@@ -47,4 +47,70 @@ public class Tools {
         }
         return digits;
     }
+
+    public static int blockAmount(int first, int second, int manipulation)
+    {
+        double workWith;
+        int result;
+        double numberLength = 0.0;
+        switch (manipulation)
+        {
+            case 0:
+                result = first + second;
+                break;
+            case 1:
+                result = first - second;
+                break;
+            case 2:
+                result = first * second;
+                break;
+            case 3:
+                result = first / second;
+                break;
+            default:
+                result = first + second;
+                break;
+        }
+        if (first > second)
+        {
+            workWith = first;
+        } else
+        {
+            workWith = second;
+        }
+        if (result > workWith)
+        {
+            workWith = result;
+        }
+        while (workWith >= 1)
+        {
+            workWith = workWith / 10;
+            numberLength += 1;
+        }
+        return (int) numberLength;
+    }
+
+    public static String getManipulationString(int manipulation)
+    {
+        String manipulationString;
+        switch (manipulation)
+        {
+            case 0:
+                manipulationString = "+";
+                break;
+            case 1:
+                manipulationString = "-";
+                break;
+            case 2:
+                manipulationString = "*";
+                break;
+            case 3:
+                manipulationString = "/";
+                break;
+            default:
+                manipulationString = "+";
+                break;
+        }
+        return manipulationString;
+    }
 }

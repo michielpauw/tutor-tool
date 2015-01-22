@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends ListActivity implements AdapterView.OnItemClickListener {
 
@@ -30,6 +31,8 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemClic
 
         setListAdapter(adapter);
         ListView l = this.getListView();
+        TextView text = (TextView) this.findViewById(R.id.textView);
+        text.setText("Welkom! Welke vorm van rekenen wil je testen?");
         l.setOnItemClickListener(this);
     }
 

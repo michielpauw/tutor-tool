@@ -41,25 +41,31 @@ MERGED from com.android.support:support-v4:20.0.0:17:5
 		ADDED from AndroidManifest.xml:15:9
 activity#nl.mprog.rekenbijles.MainActivity
 ADDED from AndroidManifest.xml:16:9
-	android:label
-		ADDED from AndroidManifest.xml:18:13
-	android:name
+	android:screenOrientation
 		ADDED from AndroidManifest.xml:17:13
-intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
-ADDED from AndroidManifest.xml:19:13
-action#android.intent.action.MAIN
-ADDED from AndroidManifest.xml:20:17
+	android:label
+		ADDED from AndroidManifest.xml:19:13
+	android:theme
+		ADDED from AndroidManifest.xml:20:13
 	android:name
-		ADDED from AndroidManifest.xml:20:25
-category#android.intent.category.LAUNCHER
+		ADDED from AndroidManifest.xml:18:13
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:21:13
+action#android.intent.action.MAIN
 ADDED from AndroidManifest.xml:22:17
 	android:name
-		ADDED from AndroidManifest.xml:22:27
-activity#nl.mprog.rekenbijles.ProblemActivity
-ADDED from AndroidManifest.xml:25:9
-	android:label
-		ADDED from AndroidManifest.xml:27:13
-	android:theme
-		ADDED from AndroidManifest.xml:28:13
+		ADDED from AndroidManifest.xml:22:25
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:24:17
 	android:name
-		ADDED from AndroidManifest.xml:26:13
+		ADDED from AndroidManifest.xml:24:27
+activity#nl.mprog.rekenbijles.ProblemActivity
+ADDED from AndroidManifest.xml:27:9
+	android:screenOrientation
+		ADDED from AndroidManifest.xml:28:13
+	android:label
+		ADDED from AndroidManifest.xml:30:13
+	android:theme
+		ADDED from AndroidManifest.xml:31:13
+	android:name
+		ADDED from AndroidManifest.xml:29:13

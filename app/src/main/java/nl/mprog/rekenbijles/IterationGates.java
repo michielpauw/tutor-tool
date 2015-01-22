@@ -5,6 +5,9 @@ import java.util.Arrays;
 
 /**
  * Created by michielpauw on 20/01/15.
+ *
+ * This class is responsible for finding tuples of gates which will be probed in the next
+ * iteration.
  */
 public class IterationGates {
     private static ArrayList<Integer> indices;
@@ -13,6 +16,10 @@ public class IterationGates {
     private static ArrayList<Integer> gatesArray;
     private static int maxN = 4;
 
+    /**
+     *
+     * @param amountGates is the amount of gates we are testing in total.
+     */
     public IterationGates(int amountGates)
     {
         indices = new ArrayList<Integer>();
@@ -22,6 +29,7 @@ public class IterationGates {
         createGatesArray(amountGates);
     }
 
+    // create an initial ArrayList of gates which still need to be probed.
     public void createGatesArray(int amountGates)
     {
         gatesArray = new ArrayList<Integer>();
@@ -31,6 +39,12 @@ public class IterationGates {
         }
     }
 
+    /**
+     *
+     * @return the next tuple of gates to be probed. If all combinations of gates (with a maximum
+     * of 4-tuples) have been tested, it returns an array with the first entry -2, so the method
+     * which calls it knows it's finished.
+     */
     public int[] nextToProbe()
     {
         int[] toReturn = new int[currentN];
@@ -47,6 +61,10 @@ public class IterationGates {
         }
     }
 
+    /**
+     *
+     * @return an int[] of the gates to be probed, based on the current indices to probe.
+     */
     public int[] getGates()
     {
         int[] toReturn = new int[currentN];
@@ -57,6 +75,11 @@ public class IterationGates {
         return toReturn;
     }
 
+    /**
+     * Increments the indices in the correct way. If the last gate in GatesArray has been checked,
+     * either an extra gate will be added, or the gate 'to the left' of this gate will be
+     * incremented.
+     */
     public void increment()
     {
         int currentIndex = indices.get(currentN - 1);
@@ -94,6 +117,14 @@ public class IterationGates {
         }
     }
 
+    /**
+     *
+     * @param currentIndex is the index in indices we are currently trying to increase.
+     * @return if incrementing one of the existing indices has been successful, it will return true.
+     * Otherwise a new index needs to be added, and the method will return false.
+     *
+     * Recursively tries to find an index which can be increased.
+     */
     public boolean recIncrement(int currentIndex)
     {
 
@@ -116,6 +147,12 @@ public class IterationGates {
         return true;
     }
 
+    /**
+     *
+     * @param toRemove is a gate tuple which turns out to be buggy and needs to be removed.
+     *
+     * Finds the index of a gate to be removed from the gatesArray.
+     */
     public void remove(int[] toRemove)
     {
         if (currentN > gatesArray.size() - toRemove.length)
@@ -139,6 +176,12 @@ public class IterationGates {
         }
     }
 
+    /**
+     *
+     * @param removeIndex the current index of the gate that needs to be removed.
+     *
+     * Remove an entry from gatesArray and change current indices accordingly.
+     */
     public void removeOne(int removeIndex)
     {
         boolean check = true;

@@ -14,7 +14,7 @@ public class FindBugs {
     private static int bugAmount = 20;
     private static int amountGates = 13;
     private static boolean[] noBugs = new boolean[amountGates];
-    private static int[][] bugs;
+    private static ArrayList<int[]> bugs;
 
 
     public static int lengthOne;
@@ -50,11 +50,16 @@ public class FindBugs {
         lengthTwo = digitsProblemTwo.length - 1;
     }
 
-    public int[][] getBugs()
+    public ArrayList<int[]> getBugs()
     {
         return bugs;
     }
 
+    /**
+     *
+     * @return a boolean that tells whether the answer was correct or not. If the answer is correct
+     * there will be no analysis.
+     */
     public boolean setupAnalysis()
     {
         int answerLength = answerProvided.length;
@@ -74,7 +79,7 @@ public class FindBugs {
                 rightDigit[i] = false;
             }
         }
-        bugs = new int[bugAmount][];
+        bugs = new ArrayList<int[]>();
         bugsProbe = new boolean[amountGates];
         toCheckLeft = amountGates;
         iteration = new IterationGates(amountGates);
@@ -102,11 +107,10 @@ public class FindBugs {
         // if a configuration can be held responsible for the wrong answer.
         if (buggy)
         {
-            int amountGatesBuggy = currentGatesProbed.length;
             iteration.remove(currentGatesProbed);
             int[] copyOfGates = new int[currentGatesProbed.length];
             System.arraycopy(currentGatesProbed, 0, copyOfGates, 0, currentGatesProbed.length);
-            bugs[currentBug] = copyOfGates;
+            bugs.add(copyOfGates);
             currentBug++;
         } else
         {
@@ -115,16 +119,11 @@ public class FindBugs {
         return continueAnalysis;
     }
 
-    // change the index of which gate should be probed from the stillToCheck list
-    public void changeIndex(int amountGates)
-    {
-        for (int i = 0; i < amountGates; i++)
-        {
-            currentlyProbedIndex[i] = currentlyProbedIndex[0] + i;
-        }
-    }
-
-
+    /**
+     *
+     * @return a boolean array which will have an entry true if a gate needs to be tested as
+     * buggy.
+     */
     public boolean[] getProbes()
     {
         boolean[] probeArray = new boolean[amountGates];

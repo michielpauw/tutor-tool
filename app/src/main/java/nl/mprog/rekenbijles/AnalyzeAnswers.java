@@ -1,6 +1,8 @@
 package nl.mprog.rekenbijles;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by michielpauw on 08/01/15.
@@ -11,10 +13,12 @@ public class AnalyzeAnswers {
     private static int manipulation;
     private static int[][] answers;
     private static int[][] problems;
-    private static int[][] bugs;
+    private static ArrayList<int[]> bugs;
     private static int amountBugs = 13;
     private static ArrayList<int[]> uniqueBugs;
     private static ArrayList<Integer> occurrences;
+    private static int totalAmountBugs;
+    private static int[] indicesDecreasingRatio;
 
     public AnalyzeAnswers(int manipulation_in, int answer_amount, int[][] problems_in)
     {
@@ -31,21 +35,13 @@ public class AnalyzeAnswers {
         answers[position] = answer;
     }
 
-    // a method which calls my test case subtraction analysis
-    public int[][] testAnalysis()
-    {
-        int[] problem = new int[2];
-        problem = problems[0];
-        SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers[0]);
-        subAnalysis.runAnalysis();
-        return subAnalysis.getBugs();
-    }
 
-    public int[][][] analysis()
+    public void analysis()
     {
         int amount = answers.length;
         int[][][] allBugs = new int[amount][][];
 
+        totalAmountBugs = 0;
         for (int i = 0; i < amount; i++)
         {
             int[] problem = new int[2];
@@ -53,11 +49,12 @@ public class AnalyzeAnswers {
             SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers[i]);
             subAnalysis.runAnalysis();
             bugs = subAnalysis.getBugs();
-            amount = bugs.length;
-            for (int j = 0; j < amount; j++)
+            int amountBugsProblem = bugs.size();
+            for (int j = 0; j < amountBugsProblem; j++)
             {
-                int[] bug = bugs[j];
-                if (!uniqueBugs.contains(bug))
+                totalAmountBugs ++;
+                int[] bug = bugs.get(j);
+                if (!alreadyAdded(bug))
                 {
                     uniqueBugs.add(bug);
                     occurrences.add(1);
@@ -70,38 +67,126 @@ public class AnalyzeAnswers {
                 }
             }
         }
-
-        return allBugs;
     }
 
-    public ArrayList<String> getBugsProblem(int[][] bugs)
+    public boolean alreadyAdded(int[] bug)
+    {
+        boolean toReturn = false;
+        int length = uniqueBugs.size();
+        for (int i = 0; i < length; i++)
+        {
+            if (Arrays.equals(uniqueBugs.get(i), bug))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<int[]> getBugsFound()
+    {
+        return uniqueBugs;
+    }
+
+    public ArrayList<Integer> getOccurrences()
+    {
+        return occurrences;
+    }
+
+    public float[] getRatio()
+    {
+        int length = occurrences.size();
+        float[] ratio = new float[length];
+        for (int i = 0; i < length; i++)
+        {
+            ratio[i] = (float) occurrences.get(i) / totalAmountBugs;
+        }
+
+        setIndicesDecreasingRatio(ratio);
+        float[] toReturn = new float[length];
+        for (int i = 0; i < length; i++)
+        {
+            toReturn[i] = ratio[indicesDecreasingRatio[i]];
+        }
+        return toReturn;
+    }
+
+    public void setIndicesDecreasingRatio(float[] ratio)
+    {
+        int length = occurrences.size();
+        indicesDecreasingRatio = new int[length];
+        boolean notSorted = true;
+        int currentIndex = 0;
+        while (notSorted)
+        {
+            int indexHighest = 0;
+            float highest = 0;
+            notSorted = false;
+            for (int i = currentIndex; i < length; i++)
+            {
+                if (ratio[i] > highest)
+                {
+                    notSorted = true;
+                    highest = ratio[i];
+                    indexHighest = i;
+                }
+            }
+            indicesDecreasingRatio[currentIndex] = indexHighest;
+            currentIndex ++;
+            if (currentIndex == length)
+            {
+                break;
+            }
+        }
+        int i = 0;
+    }
+
+    public int[][] getSortedBugs()
+    {
+        int length = uniqueBugs.size();
+        int[][] sortedBugs = new int[length][];
+        for (int i = 0; i < length; i++)
+        {
+            sortedBugs[i] = uniqueBugs.get(indicesDecreasingRatio[i]);
+        }
+        return sortedBugs;
+    }
+
+
+    public String[] getBugsString(int[][] bugs)
     {
         int amount = bugs.length;
-        ArrayList<String> namesBugs = new ArrayList<String>();
+        String[] namesBugs = new String[amount];
         for (int i = 0; i < amount; i++)
         {
             int[] bug = bugs[i];
             int lengthBug = bug.length;
-            String currentBugEntry;
+            String currentBugEntry = " " + Integer.toString(i + 1) + ": ";
             for (int j = 0; j < lengthBug; j++)
             {
-                String currentBugPart;
-
-                getBugPart(bug[i], 1);
+                String toAdd = getBugPartString(bug[j], 1);
+                String temp = new String(currentBugEntry);
+                currentBugEntry = temp + toAdd;
+                String temp2 = new String(currentBugEntry);
+                if (j < lengthBug - 1)
+                {
+                    currentBugEntry = temp2 + " en ";
+                }
             }
+            namesBugs[i] = currentBugEntry;
         }
         return namesBugs;
     }
 
-    public String getBugPart(int bug, int manipulation)
+    public String getBugPartString(int bug, int manipulation)
     {
         String[] possibleSubtractionBugs = new String[]
-                {"the first comparer", "the boolean in the first borrower", "the adding of ten" +
-                        "in the first borrower", "the first differencer", "the boolean in the" +
-                        "first zeroer", "the decreasing of the value in the first zeroer", "the" +
-                        "second comparer", "the boolean in the second borrower", "the adding of ten" +
-                        "in the second borrower", "the second differencer", "the or manipulation",
-                "the third differencer", "the fourth differencer"};
+                {"de eerste vergelijker", "de boolean in de eerste lener", "het optellen van tien" +
+                        " in de eerste lener", "de eerste aftrekker", "de boolean in de eerste" +
+                        " nuller", "het verminderen van de waarde in de nuller", "de tweede" +
+                        " vergelijker", "de boolean in de tweede lener", "het optellen van tien" +
+                        " in de tweede lener", "de tweede aftrekker", "de of-manipulatie",
+                "de derde aftrekker", "de vierde aftrekker"};
         return possibleSubtractionBugs[bug];
     }
 
@@ -110,7 +195,7 @@ public class AnalyzeAnswers {
         for (int i = 0; i < bugList.size(); i++)
         {
             int[] currentBug = bugList.get(i);
-            if (currentBug.equals(bug))
+            if (Arrays.equals(currentBug, bug))
             {
                 return i;
             }
