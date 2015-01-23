@@ -13,17 +13,18 @@ public class IterationGates {
     private static boolean finish;
     private static int currentN;
     private static ArrayList<Integer> gatesArray;
-    private static int maxN = 4;
+    private static int maxN;
 
     /**
      * @param amountGates is the amount of gates we are testing in total.
      */
-    public IterationGates(int amountGates)
+    public IterationGates(int amountGates, int maxNIn)
     {
         indices = new ArrayList<Integer>();
         indices.add(0);
         finish = false;
         currentN = 1;
+        maxN = maxNIn;
         createGatesArray(amountGates);
     }
 

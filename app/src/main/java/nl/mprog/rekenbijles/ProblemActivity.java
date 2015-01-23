@@ -33,7 +33,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     int[][] problems;
     int manipulation;
     UICreator interfaceCreator;
-    AnalyzeAnswers analyze;
+    AnswerAnalysis analyze;
     int problemAmount = 10;
     int blockAmount = 3;
     int[][] bugs;
@@ -66,7 +66,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         problems = generator.generateNumbers();
 
         // create an AnalyzeAnswers object, so I can analyze the answers
-        analyze = new AnalyzeAnswers(manipulation, problemAmount, problems);
+        analyze = new AnswerAnalysis(manipulation, problemAmount, problems);
 
         createInterface();
     }
@@ -126,7 +126,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         {
             // if all problems have been shown
             analyze.enterAnswer(currentAnswer, currentProblem);
-            analyze.analysis();
+            analyze.runAnalysis();
             ratio = analyze.getRatio();
             bugs = analyze.getSortedBugs();
             bugsString = analyze.getBugsString(bugs);

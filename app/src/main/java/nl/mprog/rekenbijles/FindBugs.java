@@ -35,6 +35,9 @@ public class FindBugs {
     private static int currentProbedAmount;
     private static int currentBug;
 
+    private static int maxBugLength;
+    private static boolean remove;
+
     private static IterationGates iteration;
 
 
@@ -58,8 +61,10 @@ public class FindBugs {
      * @return a boolean that tells whether the answer was correct or not. If the answer is correct
      * there will be no analysis.
      */
-    public boolean setupAnalysis()
+    public boolean setupAnalysis(int maxBugLengthIn, boolean removeIn)
     {
+        remove = removeIn;
+        maxBugLength = maxBugLengthIn;
         int answerLength = answerProvided.length;
 
         answerManipulated = new int[answerLength];
@@ -80,7 +85,7 @@ public class FindBugs {
         bugs = new ArrayList<int[]>();
         bugsProbe = new boolean[amountGates];
         toCheckLeft = amountGates;
-        iteration = new IterationGates(amountGates);
+        iteration = new IterationGates(amountGates, maxBugLength);
         currentGatesProbed = new int[] {-1};
         currentBug = 0;
         currentlyProbedIndex = new int[] {0};
@@ -106,7 +111,10 @@ public class FindBugs {
         // if a configuration can be held responsible for the wrong answer.
         if (buggy)
         {
-            iteration.remove(currentGatesProbed);
+            if (remove)
+            {
+                iteration.remove(currentGatesProbed);
+            }
             int[] copyOfGates = new int[currentGatesProbed.length];
             System.arraycopy(currentGatesProbed, 0, copyOfGates, 0, currentGatesProbed.length);
             bugs.add(copyOfGates);
@@ -140,26 +148,5 @@ public class FindBugs {
         }
         // return the boolean values for each gate: true means it's buggy
         return probeArray;
-    }
-
-    // create a list of gates that have not yet been identified as buggy
-    public int[] stillToCheck(int toRemove, int[] previousToCheck)
-    {
-        int[] toCheck = new int[toCheckLeft];
-
-        int lengthPrevious = previousToCheck.length;
-        int positionNew = 0;
-        for (int i = 0; i < lengthPrevious; i++)
-        {
-            if (toRemove == -1)
-            {
-                toCheck[i] = i;
-            } else if (previousToCheck[i] != toRemove)
-            {
-                toCheck[positionNew] = previousToCheck[i];
-                positionNew++;
-            }
-        }
-        return toCheck;
     }
 }

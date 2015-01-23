@@ -33,10 +33,10 @@ public class SubtractionAnalysis extends FindBugs {
         zeroerFirstBuggy = false;
     }
 
-    public void runAnalysis()
+    public void runAnalysis(int maxBugLength, boolean remove)
     {
         boolean continueAnalysis = true;
-        continueAnalysis = setupAnalysis();
+        continueAnalysis = setupAnalysis(maxBugLength, remove);
 
         while (continueAnalysis)
         {
