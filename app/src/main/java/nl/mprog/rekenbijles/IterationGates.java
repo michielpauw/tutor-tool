@@ -1,11 +1,10 @@
 package nl.mprog.rekenbijles;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by michielpauw on 20/01/15.
- *
+ * <p/>
  * This class is responsible for finding tuples of gates which will be probed in the next
  * iteration.
  */
@@ -17,7 +16,6 @@ public class IterationGates {
     private static int maxN = 4;
 
     /**
-     *
      * @param amountGates is the amount of gates we are testing in total.
      */
     public IterationGates(int amountGates)
@@ -40,7 +38,6 @@ public class IterationGates {
     }
 
     /**
-     *
      * @return the next tuple of gates to be probed. If all combinations of gates (with a maximum
      * of 4-tuples) have been tested, it returns an array with the first entry -2, so the method
      * which calls it knows it's finished.
@@ -53,8 +50,7 @@ public class IterationGates {
             toReturn = getGates();
             increment();
             return toReturn;
-        }
-        else
+        } else
         {
             toReturn[0] = -2;
             return toReturn;
@@ -62,7 +58,6 @@ public class IterationGates {
     }
 
     /**
-     *
      * @return an int[] of the gates to be probed, based on the current indices to probe.
      */
     public int[] getGates()
@@ -92,13 +87,11 @@ public class IterationGates {
         {
             int indexLeft = indices.get(currentN - 2);
             indices.set(currentN - 1, indexLeft + 1);
-        }
-        else if (currentN < maxN)
+        } else if (currentN < maxN)
         {
-            currentN ++;
+            currentN++;
             appendAndReset();
-        }
-        else
+        } else
         {
             finish = true;
         }
@@ -118,11 +111,10 @@ public class IterationGates {
     }
 
     /**
-     *
      * @param currentIndex is the index in indices we are currently trying to increase.
      * @return if incrementing one of the existing indices has been successful, it will return true.
      * Otherwise a new index needs to be added, and the method will return false.
-     *
+     * <p/>
      * Recursively tries to find an index which can be increased.
      */
     public boolean recIncrement(int currentIndex)
@@ -139,8 +131,7 @@ public class IterationGates {
         {
             int indexLeft = indices.get(currentIndex - 1);
             indices.set(currentIndex, indexLeft + 1);
-        }
-        else
+        } else
         {
             return false;
         }
@@ -148,10 +139,9 @@ public class IterationGates {
     }
 
     /**
-     *
      * @param toRemove is a gate tuple which turns out to be buggy and needs to be removed.
-     *
-     * Finds the index of a gate to be removed from the gatesArray.
+     *                 <p/>
+     *                 Finds the index of a gate to be removed from the gatesArray.
      */
     public void remove(int[] toRemove)
     {
@@ -177,10 +167,9 @@ public class IterationGates {
     }
 
     /**
-     *
      * @param removeIndex the current index of the gate that needs to be removed.
-     *
-     * Remove an entry from gatesArray and change current indices accordingly.
+     *                    <p/>
+     *                    Remove an entry from gatesArray and change current indices accordingly.
      */
     public void removeOne(int removeIndex)
     {

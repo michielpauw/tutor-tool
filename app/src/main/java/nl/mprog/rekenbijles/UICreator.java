@@ -153,6 +153,9 @@ public class UICreator {
         }
     }
 
+    /**
+     * Creates a +-/* sign, depending on which manipulation the user chooses to do.
+     */
     public void createManipulationView(int width, int height, int amount, int manipulation)
     {
         // the separator is just a +-x/ sign, to let the user know which manipulation to use
@@ -166,7 +169,7 @@ public class UICreator {
         problemLayout.addView(separator, paramsTextSep);
     }
 
-    // the AnswerView is a transparent TextView which can be updates by clicking on it
+    // the AnswerView is a transparent TextView which can be updated by clicking on it
     public TextView createAnswerView(int amount, int position)
     {
         TextView answerView = new TextView(activity);
@@ -196,6 +199,27 @@ public class UICreator {
         circularButton.setY(position_ver_first + 2 * textViewHeight + radius + 30);
         circularButton.setRadius(radius);
         problemLayout.addView(circularButton);
+    }
+
+    /**
+     * Adds a TextView which shows which number is currently selected.
+     *
+     * @return a TextView which will change if a number is clicked
+     */
+    public TextView addCurrentlySelected()
+    {
+        TextView currentlySelected = new TextView(activity);
+        RelativeLayout.LayoutParams currentlySelectedParams = new RelativeLayout.LayoutParams
+                (textViewWidth, textViewHeight + 100);
+        currentlySelectedParams.leftMargin = 50;
+        currentlySelectedParams.topMargin = 0;
+        currentlySelected.setTag("currentlySelected");
+        currentlySelected.setText("0");
+        currentlySelected.setTextSize(70);
+        currentlySelected.setTypeface(null, Typeface.BOLD);
+        currentlySelected.setTextColor(activity.getResources().getColor(R.color.accent));
+        root.addView(currentlySelected, currentlySelectedParams);
+        return currentlySelected;
     }
 
     // adds the main control buttons, ten digits which can be clicked
@@ -246,11 +270,18 @@ public class UICreator {
         //set the properties for button
         Button button = new Button(activity);
         button.setText(string);
+        button.setTextColor(activity.getResources().getColor(R.color.white));
+        button.setTextSize(20);
+        button.setBackgroundColor(activity.getResources().getColor(R.color.primary2));
         root.addView(button, paramsButton);
+
         return button;
     }
 
-    public void addHistogramView()
+    /**
+     * Create a layout to which we add a histogram.
+     */
+    public void addHistogramLayout()
     {
         heightHistogramView = heightScr / 3;
         widthHistogramView = widthScr - 70;
@@ -269,12 +300,20 @@ public class UICreator {
         highlighted = highlighted_in;
         DrawView histogramBars = new DrawView(activity);
         histogramBars.setType(1);
-        histogramBars.initializeRectangle(widthHistogramView, heightHistogramView + 20, ratio, highlighted);
+        histogramBars.initializeRectangle(widthHistogramView, heightHistogramView + 20, ratio,
+                highlighted);
         int barWidth = histogramBars.getRectangleWidth();
         createHistogramLegend(barWidth, ratio);
         histogramLayout.addView(histogramBars);
     }
 
+
+    /**
+     * Create the numbers below the bars, so the user knows which bug they correspond with.
+     *
+     * @param barWidth the distance between each number
+     * @param ratio    the relative height of each bar
+     */
     public void createHistogramLegend(int barWidth, float[] ratio)
     {
 
@@ -286,7 +325,7 @@ public class UICreator {
             RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(barWidth, 80);
             paramsText.topMargin = y;
             paramsText.leftMargin = 25 + barWidth * i;
-            number.setTextSize(15);
+            number.setTextSize(10);
             number.setText(Integer.toString(i + 1));
             number.setTextColor(activity.getResources().getColor(R.color.white));
             number.setGravity(Gravity.CENTER);
@@ -294,6 +333,9 @@ public class UICreator {
         }
     }
 
+    /**
+     * create a layout to add a ListView to, where the bugs will be shown.
+     */
     public void addBugLayout()
     {
         bugLayout = new RelativeLayout(activity);
@@ -308,6 +350,12 @@ public class UICreator {
         root.addView(bugLayout, problemParams);
     }
 
+    /**
+     * Creates a list of all the bugs that occurred.
+     *
+     * @param adapter the adapter containing all the Strings, describing all the bugs
+     * @return a ListView to which the activity can add an onItemClickListener
+     */
     public AdapterView addListView(ArrayAdapter<String> adapter)
     {
         ListView bugList = new ListView(activity);
@@ -318,5 +366,23 @@ public class UICreator {
 
         bugLayout.addView(bugList, problemParams);
         return bugList;
+    }
+
+    /**
+     * Shows in the histogram how many times a specific bug occurred.
+     *
+     * @param amount is the amount a bug at index i occurred
+     */
+    public void addAmountBug(int amount)
+    {
+        TextView bugAmountView = new TextView(activity);
+        RelativeLayout.LayoutParams bugAmountParams = new RelativeLayout.LayoutParams
+                (widthBugLayout, heightBugLayout);
+        bugAmountParams.leftMargin = (widthHistogramView / 5) * 3;
+        bugAmountParams.topMargin = 30;
+        bugAmountView.setText("Amount: " + Integer.toString(amount));
+        bugAmountView.setTextSize(15);
+        bugAmountView.setTextColor(activity.getResources().getColor(R.color.white));
+        histogramLayout.addView(bugAmountView, bugAmountParams);
     }
 }

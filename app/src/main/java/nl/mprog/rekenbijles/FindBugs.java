@@ -5,7 +5,6 @@ package nl.mprog.rekenbijles;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FindBugs {
 
@@ -56,7 +55,6 @@ public class FindBugs {
     }
 
     /**
-     *
      * @return a boolean that tells whether the answer was correct or not. If the answer is correct
      * there will be no analysis.
      */
@@ -92,6 +90,7 @@ public class FindBugs {
 
     /**
      * Handles a buggy configuration by removing gates from stillToCheck array.
+     *
      * @param buggy if true the answer can be explained by the current bug configuration.
      * @return whether analysis should be continued.
      */
@@ -120,7 +119,6 @@ public class FindBugs {
     }
 
     /**
-     *
      * @return a boolean array which will have an entry true if a gate needs to be tested as
      * buggy.
      */

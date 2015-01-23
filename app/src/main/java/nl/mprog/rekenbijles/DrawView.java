@@ -2,7 +2,6 @@ package nl.mprog.rekenbijles;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
@@ -18,6 +17,8 @@ public class DrawView extends View {
     private static int amount;
     private static int width;
     private static int xOriginal;
+    private static int xCurrentlySelected;
+    private static int yCurrentlySelected;
     private static int type;
     private static int widthView;
     private static int heightView;
@@ -48,13 +49,9 @@ public class DrawView extends View {
                 x = xOriginal + i * width;
                 canvas.drawCircle(x, y, radius, paint);
             }
-        }
-        else if (type == 1)
+        } else if (type == 1)
         {
             Paint paint = new Paint();
-
-
-
             for (int i = 0; i < amountBugs; i++)
             {
                 paint.setColor(getResources().getColor(R.color.accent));
@@ -72,7 +69,8 @@ public class DrawView extends View {
         }
     }
 
-    public void initializeRectangle(int widthView, int heightView, float[] ratio_in, int highlighted_in)
+    public void initializeRectangle(int widthView, int heightView, float[] ratio_in,
+                                    int highlighted_in)
     {
         amountBugs = ratio_in.length;
         ratio = ratio_in;
@@ -102,6 +100,16 @@ public class DrawView extends View {
     {
         x = xIn;
         xOriginal = xIn;
+    }
+
+    public void setXCurrentlySelected(int xIn)
+    {
+        xCurrentlySelected = xIn;
+    }
+
+    public void setYCurrentlySelected(int yIn)
+    {
+        yCurrentlySelected = yIn;
     }
 
     public void setY(int yIn)

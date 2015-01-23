@@ -2,7 +2,6 @@ package nl.mprog.rekenbijles;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by michielpauw on 08/01/15.
@@ -17,8 +16,10 @@ public class AnalyzeAnswers {
     private static int amountBugs = 13;
     private static ArrayList<int[]> uniqueBugs;
     private static ArrayList<Integer> occurrences;
+    private static int[] occurrencesSorted;
     private static int totalAmountBugs;
     private static int[] indicesDecreasingRatio;
+
 
     public AnalyzeAnswers(int manipulation_in, int answer_amount, int[][] problems_in)
     {
@@ -36,6 +37,10 @@ public class AnalyzeAnswers {
     }
 
 
+    /**
+     * analysis will create a list of bugs and how often they occurred. It will call the Analysis
+     * class corresponding to the manipulation.
+     */
     public void analysis()
     {
         int amount = answers.length;
@@ -52,14 +57,13 @@ public class AnalyzeAnswers {
             int amountBugsProblem = bugs.size();
             for (int j = 0; j < amountBugsProblem; j++)
             {
-                totalAmountBugs ++;
+                totalAmountBugs++;
                 int[] bug = bugs.get(j);
                 if (!alreadyAdded(bug))
                 {
                     uniqueBugs.add(bug);
                     occurrences.add(1);
-                }
-                else
+                } else
                 {
                     int index = getIndex(bug, uniqueBugs);
                     int currentValue = occurrences.get(index);
@@ -69,6 +73,12 @@ public class AnalyzeAnswers {
         }
     }
 
+    /**
+     * Check whether a bug was already added to the uniqueBugs list.
+     *
+     * @param bug the bug that must be checked
+     * @return true if the bug was already added, false if not
+     */
     public boolean alreadyAdded(int[] bug)
     {
         boolean toReturn = false;
@@ -93,6 +103,9 @@ public class AnalyzeAnswers {
         return occurrences;
     }
 
+    /**
+     * @return a float array with the relative amount of times a bug occurred in the process.
+     */
     public float[] getRatio()
     {
         int length = occurrences.size();
@@ -111,28 +124,40 @@ public class AnalyzeAnswers {
         return toReturn;
     }
 
+    /**
+     * Gets the order of indices of the float array from high value to low value.
+     *
+     * @param ratio float array which needs to be sorted high to low
+     */
     public void setIndicesDecreasingRatio(float[] ratio)
     {
         int length = occurrences.size();
         indicesDecreasingRatio = new int[length];
         boolean notSorted = true;
         int currentIndex = 0;
+        float[] ratioCopy = new float[ratio.length];
+        System.arraycopy(ratio, 0, ratioCopy, 0, ratio.length);
         while (notSorted)
         {
             int indexHighest = 0;
             float highest = 0;
             notSorted = false;
-            for (int i = currentIndex; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
-                if (ratio[i] > highest)
+                if (ratioCopy[i] > highest)
                 {
                     notSorted = true;
-                    highest = ratio[i];
+                    highest = ratioCopy[i];
                     indexHighest = i;
                 }
             }
-            indicesDecreasingRatio[currentIndex] = indexHighest;
-            currentIndex ++;
+            if (notSorted)
+            {
+                indicesDecreasingRatio[currentIndex] = indexHighest;
+                currentIndex++;
+                ratioCopy[indexHighest] = 0;
+            }
+
             if (currentIndex == length)
             {
                 break;
@@ -141,18 +166,36 @@ public class AnalyzeAnswers {
         int i = 0;
     }
 
+    /**
+     * Sort the list of bugs by how often they have occurred.
+     *
+     * @return a sorted list of bugs
+     */
     public int[][] getSortedBugs()
     {
         int length = uniqueBugs.size();
         int[][] sortedBugs = new int[length][];
+        occurrencesSorted = new int[occurrences.size()];
         for (int i = 0; i < length; i++)
         {
+            occurrencesSorted[i] = occurrences.get(indicesDecreasingRatio[i]);
             sortedBugs[i] = uniqueBugs.get(indicesDecreasingRatio[i]);
         }
         return sortedBugs;
     }
 
+    public int[] getOccurrencesSorted()
+    {
+        return occurrencesSorted;
+    }
 
+
+    /**
+     * Creates a list of Strings describing all the bugs that occurred.
+     *
+     * @param bugs the bugs that need to be explained in words
+     * @return a list of Strings that describe the bugs that occurred.
+     */
     public String[] getBugsString(int[][] bugs)
     {
         int amount = bugs.length;
@@ -186,10 +229,11 @@ public class AnalyzeAnswers {
                         " nuller", "het verminderen van de waarde in de nuller", "de tweede" +
                         " vergelijker", "de boolean in de tweede lener", "het optellen van tien" +
                         " in de tweede lener", "de tweede aftrekker", "de of-manipulatie",
-                "de derde aftrekker", "de vierde aftrekker"};
+                        "de derde aftrekker", "de vierde aftrekker"};
         return possibleSubtractionBugs[bug];
     }
 
+    // get the index of a specific bug that was already added.
     public int getIndex(int[] bug, ArrayList<int[]> bugList)
     {
         for (int i = 0; i < bugList.size(); i++)

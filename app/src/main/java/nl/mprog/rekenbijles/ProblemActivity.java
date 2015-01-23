@@ -19,9 +19,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class ProblemActivity extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener{
+public class ProblemActivity extends ActionBarActivity implements View.OnClickListener,
+        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     Spinner spinner;
     Button numberButton;
@@ -42,6 +42,9 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     ArrayList<Integer> occurrences;
     int highlighted;
     int moreInfo;
+    int amountOfSpecificBug;
+    int[] occurrencesSorted;
+    TextView currentlySelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -101,6 +104,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         {
             // click on a number button
             numberClicked = clicked;
+            currentlySelected.setText(Integer.toString(clicked));
         } else if (clicked < 30)
         {
             // click on an answer view
@@ -114,7 +118,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         {
             // click on 'verder' button (get a new problem)
             analyze.enterAnswer(currentAnswer, currentProblem);
-            currentProblem ++;
+            currentProblem++;
             RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
             currentLayout.removeAllViews();
             createInterface();
@@ -127,6 +131,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             bugs = analyze.getSortedBugs();
             bugsString = analyze.getBugsString(bugs);
             occurrences = analyze.getOccurrences();
+            occurrencesSorted = analyze.getOccurrencesSorted();
             createHypothesisInterface();
             int i = 0;
         }
@@ -138,6 +143,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
 //        blockAmount = Tools.blockAmount(problems[currentProblem][0],
 //                problems[currentProblem][1], manipulation);
         interfaceCreator.createProblemLayout();
+
         for (int i = 0; i < 10; i++)
         {
             numberButton = interfaceCreator.addNumberButton(i);
@@ -145,7 +151,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             numberButton.setOnClickListener(this);
         }
         int widthScr = interfaceCreator.getDisplayWidth();
-        continueButton = interfaceCreator.createButton("Verder", widthScr - 500, 0, 400, 150);
+        continueButton = interfaceCreator.createButton("Verder", widthScr - 500, 80, 400, 150);
         continueButton.setTag(30);
         continueButton.setOnClickListener(this);
         interfaceCreator.createTextView(blockAmount, problems[currentProblem][0],
@@ -153,6 +159,8 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
 
         currentAnswer = new int[blockAmount];
         interfaceCreator.addAnswerCircles(blockAmount);
+        currentlySelected = interfaceCreator.addCurrentlySelected();
+        currentlySelected.setText(Integer.toString(numberClicked));
         for (int i = 0; i < blockAmount; i++)
         {
             answerView = interfaceCreator.createAnswerView(blockAmount, i);
@@ -162,13 +170,17 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Creates the entire interface that will be shown after all answers are provided.
+     */
     public void createHypothesisInterface()
     {
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
         currentLayout.removeAllViews();
 
-        interfaceCreator.addHistogramView();
+        interfaceCreator.addHistogramLayout();
         interfaceCreator.addHistogram(ratio, highlighted);
+        interfaceCreator.addAmountBug(amountOfSpecificBug);
         interfaceCreator.addBugLayout();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.bug_list_item,
@@ -178,13 +190,17 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         adapterView.setOnItemLongClickListener(this);
     }
 
+    // highlight a bar in the histogram after its corresponding bug was clicked
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
     {
         highlighted = i;
+        amountOfSpecificBug = occurrencesSorted[i];
         createHypothesisInterface();
     }
 
+    // after a bug was clicked and held, a new view will be generated which provides more info
+    // about the bug
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
     {
@@ -193,6 +209,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         return false;
     }
 
+    // the interface which will provide more info about a specific bug (still to be implemented)
     public void createMoreInfoInterface()
     {
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
