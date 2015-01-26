@@ -33,10 +33,10 @@ public class SubtractionAnalysis extends FindBugs {
         zeroerFirstBuggy = false;
     }
 
-    public void runAnalysis(int maxBugLength, boolean remove)
+    public void runAnalysis(int maxBugLength, boolean answerAnalysis)
     {
         boolean continueAnalysis = true;
-        continueAnalysis = setupAnalysis(maxBugLength, remove);
+        continueAnalysis = setupAnalysis(maxBugLength, answerAnalysis);
 
         while (continueAnalysis)
         {
@@ -47,11 +47,45 @@ public class SubtractionAnalysis extends FindBugs {
                 continueAnalysis = false;
                 break;
             }
-            continueAnalysis = analyseSteps(subtractionSteps(bugsProbe));
+            boolean buggy = subtractionAlgorithm(answerAnalysis);
+            continueAnalysis = analyseSteps(buggy);
         }
     }
 
-    public boolean subtractionSteps(boolean[] bugsProbe)
+    public boolean subtractionAlgorithm(boolean analysis)
+    {
+        int[] buggyAnswer = subtractionSteps();
+        boolean[] allRight = new boolean[] {true, true, true};
+        boolean[] rightDigitsAnalysis = getRightDigitsAnalysis(buggyAnswer);
+        // if we do the AnswerAnalysis we compare the buggy result of the algorithm to the buggy
+        // answer provided
+        if (analysis)
+        {
+            // if this configuration of bugs gives wrong digits at the same places as the answer given,
+            // then we say the configuration can be responsible for the wrong answer.
+            if (Arrays.equals(rightDigitsAnalysis, rightDigit) && !Arrays.equals(rightDigit, allRight))
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+        // in ProblemAnalysis, we just look whether a bug provides a faulty answer in any way
+        else
+        {
+            if (!Arrays.equals(rightDigitsAnalysis, allRight))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    public int[] subtractionSteps()
     {
         // doing subtraction step by step, to get expected outcome of each gate
         comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo],
@@ -81,6 +115,11 @@ public class SubtractionAnalysis extends FindBugs {
                 bugsProbe[12]);
         buggyAnswer[0] = differencerTwo;
 
+        return buggyAnswer;
+    }
+
+    public boolean[] getRightDigitsAnalysis(int[] buggyAnswer)
+    {
         boolean[] rightDigitsAnalysis = new boolean[3];
 
         for (int i = 0; i < 3; i++)
@@ -93,17 +132,7 @@ public class SubtractionAnalysis extends FindBugs {
                 rightDigitsAnalysis[i] = false;
             }
         }
-
-        // if this configuration of bugs gives wrong digits at the same places as the answer given,
-        // then we say the configuration can be responsible for the wrong answer.
-        boolean[] allRight = new boolean[] {true, true, true};
-        if (Arrays.equals(rightDigitsAnalysis, rightDigit) && !Arrays.equals(rightDigit, allRight))
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
+        return rightDigitsAnalysis;
     }
 
     // decide whether the number on top is greater or equal to the number below

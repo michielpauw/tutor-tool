@@ -36,7 +36,7 @@ public class FindBugs {
     private static int currentBug;
 
     private static int maxBugLength;
-    private static boolean remove;
+    private static boolean answerAnalysis;
 
     private static IterationGates iteration;
 
@@ -61,9 +61,9 @@ public class FindBugs {
      * @return a boolean that tells whether the answer was correct or not. If the answer is correct
      * there will be no analysis.
      */
-    public boolean setupAnalysis(int maxBugLengthIn, boolean removeIn)
+    public boolean setupAnalysis(int maxBugLengthIn, boolean analysisIn)
     {
-        remove = removeIn;
+        answerAnalysis = analysisIn;
         maxBugLength = maxBugLengthIn;
         int answerLength = answerProvided.length;
 
@@ -111,7 +111,7 @@ public class FindBugs {
         // if a configuration can be held responsible for the wrong answer.
         if (buggy)
         {
-            if (remove)
+            if (answerAnalysis)
             {
                 iteration.remove(currentGatesProbed);
             }
