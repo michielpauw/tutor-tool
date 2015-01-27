@@ -43,7 +43,7 @@ public class ProblemGenerator {
             int bugToTestIndex = getBugToTest(leftBorder, rightBorder);
             int[] bugToTest = bugs[bugToTestIndex];
             bugToTestList[i] = bugToTest;
-            problemTestingBug = getProblemTestingBug(bugToTest);
+            problemTestingBug = getProblemTestingBug(bugToTest, ratio);
             specificProblems[i] = problemTestingBug;
         }
         return specificProblems;
@@ -88,21 +88,16 @@ public class ProblemGenerator {
         }
     }
 
-    public int[] getProblemTestingBug(int[] bug)
+    public int[] getProblemTestingBug(int[] bug, float[] ratio)
     {
         int[][] problemList = new int[1][];
 
-        boolean problemNotFit = true;
+        boolean explanation = false;
         do {
             problemList[0] = generateProblem();
             ProblemAnalysis analyzeThisProblem = new ProblemAnalysis(manipulation, problemList);
-            analyzeThisProblem.runAnalysis();
-            int[][] bugs = analyzeThisProblem.getSortedBugs();
-            if (checkIfBugPresent(bugs, bug))
-            {
-                problemNotFit = false;
-            }
-        } while (problemNotFit);
+            explanation = analyzeThisProblem.runSpecificAnalysis(bug);
+        } while (!explanation);
 
         return problemList[0];
     }

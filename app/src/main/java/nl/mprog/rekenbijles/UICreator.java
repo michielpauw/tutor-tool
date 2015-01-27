@@ -339,7 +339,7 @@ public class UICreator {
     public void addBugLayout()
     {
         bugLayout = new RelativeLayout(activity);
-        heightBugLayout = 2 * heightScr / 3 - 100;
+        heightBugLayout = 2 * heightScr / 4 - 100;
         widthBugLayout = widthScr - 70;
         yBugLayout = heightHistogramView + 70;
         bugLayout.setBackgroundColor(activity.getResources().getColor(R.color.primary2));

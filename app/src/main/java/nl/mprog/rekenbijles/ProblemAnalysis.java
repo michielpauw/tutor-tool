@@ -27,4 +27,13 @@ public class ProblemAnalysis extends Analysis{
             handleBugs(bugs);
         }
     }
+
+    public boolean runSpecificAnalysis(int[] bug)
+    {
+        int[] nullAnswer = new int[] {0, 0, 0};
+        int[] problem = problems[0];
+        SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, nullAnswer);
+        boolean toReturn = subAnalysis.runSpecificAnalysis(bug);
+        return toReturn;
+    }
 }

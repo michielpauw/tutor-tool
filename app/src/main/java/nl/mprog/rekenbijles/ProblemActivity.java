@@ -34,7 +34,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     int manipulation;
     UICreator interfaceCreator;
     AnswerAnalysis analyze;
-    int problemAmount = 10;
+    int problemAmount = 1;
     int blockAmount = 3;
     int[][] bugs;
     float[] ratio;
@@ -114,6 +114,18 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             currentAnswer[digit] = numberClicked;
 
             v.invalidate();
+        } else if (clicked == 101)
+        {
+            // TODO: create intent and go back to main
+            // go back to main
+        } else if (clicked == 102)
+        {
+            // TODO: create new set of problems
+            // create new set of (specific) problems
+            currentProblem = 0;
+            ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
+            problems = generator.createSpecificProblems(ratio, bugs);
+
         } else if (currentProblem < problemAmount - 1)
         {
             // click on 'verder' button (get a new problem)
@@ -182,6 +194,19 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         interfaceCreator.addHistogram(ratio, highlighted);
         interfaceCreator.addAmountBug(amountOfSpecificBug);
         interfaceCreator.addBugLayout();
+        int widthScr = interfaceCreator.getDisplayWidth();
+        int heightScr = interfaceCreator.getDisplayHeight();
+        int yPosition = heightScr - 300;
+        int widthButton = widthScr / 2 - 100;
+
+        Button backButton = interfaceCreator.createButton("Terug",  10, yPosition, widthButton, 150);
+        Button continueButton = interfaceCreator.createButton("Verder",  widthButton + 110, yPosition, widthButton, 150);
+
+        backButton.setTag(101);
+        continueButton.setTag(102);
+
+        backButton.setOnClickListener(this);
+        continueButton.setOnClickListener(this);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.bug_list_item,
                 bugsString);

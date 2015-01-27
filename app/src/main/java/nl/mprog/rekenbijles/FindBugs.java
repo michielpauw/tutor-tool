@@ -11,7 +11,7 @@ public class FindBugs {
     private static int[] problems;
     private static int[][] answers;
     private static int bugAmount = 20;
-    private static int amountGates = 13;
+    protected static int amountGates = 13;
     private static boolean[] noBugs = new boolean[amountGates];
     private static ArrayList<int[]> bugs;
 

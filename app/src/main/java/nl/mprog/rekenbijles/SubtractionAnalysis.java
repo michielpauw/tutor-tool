@@ -52,6 +52,20 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
+    public boolean runSpecificAnalysis(int[] bug)
+    {
+        bugsProbe = new boolean[amountGates];
+        int length = bug.length;
+        for (int i = 0; i < length; i++)
+        {
+            int index = bug[i];
+            bugsProbe[index] = true;
+        }
+        boolean buggy = subtractionAlgorithm(false);
+
+        return buggy;
+    }
+
     public boolean subtractionAlgorithm(boolean analysis)
     {
         int[] buggyAnswer = subtractionSteps();
