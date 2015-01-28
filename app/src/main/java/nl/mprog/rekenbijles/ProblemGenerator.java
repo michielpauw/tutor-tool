@@ -11,12 +11,13 @@ import java.util.Random;
 
 public class ProblemGenerator {
 
-    private static int manipulation;
-    private static int amount_generated;
-    private static float[] ratioCumulative;
-    private static float randomFloat;
-    private static int currentIndex;
-    private static int[][] bugToTestList;
+    private int manipulation;
+    private int amount_generated;
+    private float[] ratioCumulative;
+    private float randomFloat;
+    private int currentIndex;
+    private int[][] bugToTestList;
+    int[] occurrencesProblemBugsSorted;
 
     public ProblemGenerator(int manipulation_in, int amount)
     {
@@ -49,7 +50,7 @@ public class ProblemGenerator {
         return specificProblems;
     }
 
-    private static int[][] getBugToTestList()
+    private int[][] getBugToTestList()
     {
         return bugToTestList;
     }
@@ -131,6 +132,21 @@ public class ProblemGenerator {
         numbers[0] = r_1;
         numbers[1] = r_2;
         return numbers;
+    }
+
+    public int[][] getPossibleBugs(int[][] problems)
+    {
+        ProblemAnalysis analyzeAllProblems = new ProblemAnalysis(manipulation, problems);
+        analyzeAllProblems.runAnalysis();
+        analyzeAllProblems.getRatio();
+        int[][] problemBugs = analyzeAllProblems.getSortedBugs();
+        occurrencesProblemBugsSorted = analyzeAllProblems.getOccurrencesSorted();
+        return problemBugs;
+    }
+
+    public int[] getOccurrencesProblemBugsSorted()
+    {
+        return occurrencesProblemBugsSorted;
     }
 
     public boolean checkIfBugPresent(int[][] bugs, int[] bug)

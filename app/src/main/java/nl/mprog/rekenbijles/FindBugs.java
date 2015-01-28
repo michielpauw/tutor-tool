@@ -8,37 +8,37 @@ import java.util.ArrayList;
 
 public class FindBugs {
 
-    private static int[] problems;
-    private static int[][] answers;
-    private static int bugAmount = 20;
-    protected static int amountGates = 13;
-    private static boolean[] noBugs = new boolean[amountGates];
-    private static ArrayList<int[]> bugs;
+    private int[] problems;
+    private int[][] answers;
+    private int bugAmount = 20;
+    protected int amountGates = 21;
+    private boolean[] noBugs = new boolean[amountGates];
+    private ArrayList<int[]> bugs;
 
 
-    public static int lengthOne;
-    public static int lengthTwo;
-    public static int[] digitsProblemOne;
-    public static int[] digitsProblemTwo;
-    public static int[] digitsCorrectAnswer;
-    public static int[] answerProvided;
-    public static int[] answerManipulated;
-    public static boolean[] rightDigit;
+    public int lengthOne;
+    public int lengthTwo;
+    public int[] digitsProblemOne;
+    public int[] digitsProblemTwo;
+    public int[] digitsCorrectAnswer;
+    public int[] answerProvided;
+    public int[] answerManipulated;
+    public boolean[] rightDigit;
 
-    public static boolean[] bugsProbe;
+    public boolean[] bugsProbe;
 
-    private static int toCheckLeft = amountGates;
-    private static int[] currentGatesProbed;
-    private static boolean continueAnalysis = true;
+    private int toCheckLeft = amountGates;
+    private int[] currentGatesProbed;
+    private boolean continueAnalysis = true;
 
-    private static int[] currentlyProbedIndex;
-    private static int currentProbedAmount;
-    private static int currentBug;
+    private int[] currentlyProbedIndex;
+    private int currentProbedAmount;
+    private int currentBug;
 
-    private static int maxBugLength;
-    private static boolean answerAnalysis;
+    private int maxBugLength;
+    private boolean answerAnalysis;
 
-    private static IterationGates iteration;
+    private IterationGates iteration;
 
 
     public FindBugs(int[] problem_in, int[] answer_in)
@@ -101,8 +101,8 @@ public class FindBugs {
      */
     public boolean analyseSteps(boolean buggy)
     {
-        // the chance of finding five bugs responsible for a wrong answer is small, and it saves
-        // processing time to not consider bugs of five gates or more
+        // the chance of finding five problemBugsTotal responsible for a wrong answer is small, and it saves
+        // processing time to not consider problemBugsTotal of five gates or more
         if (currentProbedAmount == 5 || !continueAnalysis)
         {
             return false;

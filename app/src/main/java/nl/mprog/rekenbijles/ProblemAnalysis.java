@@ -1,9 +1,13 @@
 package nl.mprog.rekenbijles;
 
+import java.util.ArrayList;
+
 /**
  * Created by michielpauw on 23/01/15.
  */
 public class ProblemAnalysis extends Analysis{
+
+    private ArrayList<int[]> bugs;
 
     public ProblemAnalysis(int manipulation_in, int[][] problems_in)
     {
@@ -16,7 +20,6 @@ public class ProblemAnalysis extends Analysis{
         int amount = problems.length;
         int[][][] allBugs = new int[amount][][];
 
-        totalAmountBugs = 0;
         for (int i = 0; i < amount; i++)
         {
             int[] problem = new int[2];
@@ -24,7 +27,7 @@ public class ProblemAnalysis extends Analysis{
             SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, nullAnswer);
             subAnalysis.runAnalysis(3, false);
             bugs = subAnalysis.getBugs();
-            handleBugs(bugs);
+            handleBugs(bugs, i);
         }
     }
 

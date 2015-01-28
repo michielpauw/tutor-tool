@@ -9,11 +9,11 @@ import java.util.ArrayList;
  * iteration.
  */
 public class IterationGates {
-    private static ArrayList<Integer> indices;
-    private static boolean finish;
-    private static int currentN;
-    private static ArrayList<Integer> gatesArray;
-    private static int maxN;
+    private ArrayList<Integer> indices;
+    private boolean finish;
+    private int currentN;
+    private ArrayList<Integer> gatesArray;
+    private int maxN;
 
     /**
      * @param amountGates is the amount of gates we are testing in total.

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,7 +22,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ProblemActivity extends ActionBarActivity implements View.OnClickListener,
-        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+        AdapterView.OnItemClickListener, View.OnTouchListener {
 
     Spinner spinner;
     Button numberButton;
@@ -41,10 +42,16 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     String[] bugsString;
     ArrayList<Integer> occurrences;
     int highlighted;
-    int moreInfo;
     int amountOfSpecificBug;
     int[] occurrencesSorted;
+    int[] problemOccurrences;
     TextView currentlySelected;
+    int[][] problemBugs;
+    RelativeLayout histogram;
+    float xDown;
+    float xUp;
+    RelativeLayout moreInfo;
+    int[][] occurrencesPerProblem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -64,34 +71,10 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         // generate (ten) problems with the manipulation that was clicked
         ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
         problems = generator.generateNumbers();
-
         // create an AnalyzeAnswers object, so I can analyze the answers
         analyze = new AnswerAnalysis(manipulation, problemAmount, problems);
 
         createInterface();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.reken, menu);
-        return true;
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -120,29 +103,29 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             // go back to main
         } else if (clicked == 102)
         {
-            // TODO: create new set of problems
-            // create new set of (specific) problems
             currentProblem = 0;
             ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
             problems = generator.createSpecificProblems(ratio, bugs);
+            analyze.clearAnswerList();
+            analyze.setProblems(problems);
+
+            createInterface();
 
         } else if (currentProblem < problemAmount - 1)
         {
             // click on 'verder' button (get a new problem)
-            analyze.enterAnswer(currentAnswer, currentProblem);
+            analyze.enterAnswer(currentAnswer);
             currentProblem++;
-            RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
-            currentLayout.removeAllViews();
+
             createInterface();
         } else
         {
             // if all problems have been shown
-            analyze.enterAnswer(currentAnswer, currentProblem);
+            analyze.enterAnswer(currentAnswer);
             analyze.runAnalysis();
             ratio = analyze.getRatio();
             bugs = analyze.getSortedBugs();
             bugsString = analyze.getBugsString(bugs);
-            occurrences = analyze.getOccurrences();
             occurrencesSorted = analyze.getOccurrencesSorted();
             createHypothesisInterface();
             int i = 0;
@@ -152,10 +135,12 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     // a method that creates the entire UI by calling methods from UICreator.
     public void createInterface()
     {
-//        blockAmount = Tools.blockAmount(problems[currentProblem][0],
-//                problems[currentProblem][1], manipulation);
+        RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
+        currentLayout.removeAllViews();
+
         interfaceCreator.createProblemLayout();
 
+        // create all the number buttons
         for (int i = 0; i < 10; i++)
         {
             numberButton = interfaceCreator.addNumberButton(i);
@@ -163,16 +148,23 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             numberButton.setOnClickListener(this);
         }
         int widthScr = interfaceCreator.getDisplayWidth();
+
+        // create the continue button
         continueButton = interfaceCreator.createButton("Verder", widthScr - 500, 80, 400, 150);
         continueButton.setTag(30);
         continueButton.setOnClickListener(this);
+
+        // create the textView showing the problem
         interfaceCreator.createTextView(blockAmount, problems[currentProblem][0],
                 problems[currentProblem][1], manipulation);
 
-        currentAnswer = new int[blockAmount];
-        interfaceCreator.addAnswerCircles(blockAmount);
+        // add a TextView which shows which number is currently selected
         currentlySelected = interfaceCreator.addCurrentlySelected();
         currentlySelected.setText(Integer.toString(numberClicked));
+
+        // add the circles to which the answers can be added
+        currentAnswer = new int[blockAmount];
+        interfaceCreator.addAnswerCircles(blockAmount);
         for (int i = 0; i < blockAmount; i++)
         {
             answerView = interfaceCreator.createAnswerView(blockAmount, i);
@@ -190,10 +182,21 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
         currentLayout.removeAllViews();
 
-        interfaceCreator.addHistogramLayout();
+        // create a layout in which more info can be shown
+        moreInfo = interfaceCreator.addMoreInfoLayout();
+        moreInfo.setOnTouchListener(this);
+        moreInfo.setVisibility(View.INVISIBLE);
+
+        // create a layout to which a histogram of the occurrence of each bug can be shown
+        histogram = interfaceCreator.addMoreInfoLayout();
+        histogram.setOnTouchListener(this);
+
         interfaceCreator.addHistogram(ratio, highlighted);
         interfaceCreator.addAmountBug(amountOfSpecificBug);
         interfaceCreator.addBugLayout();
+//        interfaceCreator.addMoreInfo(problems);
+
+        // create two navigation buttons
         int widthScr = interfaceCreator.getDisplayWidth();
         int heightScr = interfaceCreator.getDisplayHeight();
         int yPosition = heightScr - 300;
@@ -208,11 +211,11 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         backButton.setOnClickListener(this);
         continueButton.setOnClickListener(this);
 
+        // create a list of Strings describing all the bugs
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.bug_list_item,
                 bugsString);
         AdapterView adapterView = interfaceCreator.addListView(adapter);
         adapterView.setOnItemClickListener(this);
-        adapterView.setOnItemLongClickListener(this);
     }
 
     // highlight a bar in the histogram after its corresponding bug was clicked
@@ -221,24 +224,72 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     {
         highlighted = i;
         amountOfSpecificBug = occurrencesSorted[i];
+        //TODO: make sure that when in more info view, it does not automatically switch to histogram.
         createHypothesisInterface();
     }
 
-    // after a bug was clicked and held, a new view will be generated which provides more info
-    // about the bug
     @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
+    public boolean onTouch(View view, MotionEvent motionEvent)
     {
-        moreInfo = i;
-        createMoreInfoInterface();
+        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            // get the x value of where the screen was clicked first
+            xDown = motionEvent.getX();
+        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            // get the x value of where the screen was released
+            xUp = motionEvent.getX();
+            // if the difference is greater than 100: change view
+            if (Math.abs(xUp - xDown) > 100)
+            {
+                if (xUp < xDown)
+                {
+                    goRight();
+                }
+                else
+                {
+                    goLeft();
+                }
+            }
+
+        }
         return false;
     }
 
-    // the interface which will provide more info about a specific bug (still to be implemented)
-    public void createMoreInfoInterface()
+    public void goLeft()
     {
-        RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
-        currentLayout.removeAllViews();
+        histogram.setVisibility(View.VISIBLE);
+        moreInfo.setVisibility(View.INVISIBLE);
     }
 
+    public void goRight()
+    {
+        histogram.setVisibility(View.INVISIBLE);
+        moreInfo.setVisibility(View.VISIBLE);
+    }
+
+
+    /**
+     * I do not use these methods, therefore I put them in the bottom of my code.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.reken, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings)
+        {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

@@ -23,35 +23,35 @@ import android.widget.TextView;
  * return the view type so an listener can be created in the activity.
  */
 public class UICreator {
-    private static Context context;
-    private static Activity activity;
-    private static int widthScr;
-    private static int heightScr;
-    private static RelativeLayout root;
-    private static int heightSpinner = 120;
-    private static int topMargin = 30;
-    private static int heightSeekBar = 60;
-    private static int blockAmount = 0;
-    private static String manipulationString;
-    private static int buttonHeight;
-    private static int buttonGap = 15;
-    private static int buttonInitPos = 2 * buttonGap;
-    private static int textViewHeight = 190;
-    private static int textViewWidth = 150;
-    private static int sdk = android.os.Build.VERSION.SDK_INT;
-    private static RelativeLayout problemLayout;
-    private static int problemLayoutWidth;
-    private static int problemLayoutHeight;
-    private static int position_hor_first;
-    private static int position_ver_first;
-    private static RelativeLayout histogramLayout;
-    private static int heightHistogramView;
-    private static int widthHistogramView;
-    private static RelativeLayout bugLayout;
-    private static int heightBugLayout;
-    private static int widthBugLayout;
-    private static int yBugLayout;
-    private static int highlighted;
+    private Context context;
+    private Activity activity;
+    private int widthScr;
+    private int heightScr;
+    private RelativeLayout root;
+    private int heightSpinner = 120;
+    private int topMargin = 30;
+    private int heightSeekBar = 60;
+    private int blockAmount = 0;
+    private String manipulationString;
+    private int buttonHeight;
+    private int buttonGap = 15;
+    private int buttonInitPos = 2 * buttonGap;
+    private int textViewHeight = 190;
+    private int textViewWidth = 150;
+    private int sdk = android.os.Build.VERSION.SDK_INT;
+    private RelativeLayout problemLayout;
+    private int problemLayoutWidth;
+    private int problemLayoutHeight;
+    private int position_hor_first;
+    private int position_ver_first;
+    private RelativeLayout histogramLayout;
+    private int heightHistogramView;
+    private int widthHistogramView;
+    private RelativeLayout bugLayout;
+    private int heightBugLayout;
+    private int widthBugLayout;
+    private int yBugLayout;
+    private int highlighted;
 
 
     public UICreator(Context context_in, Activity activity_in)
@@ -281,7 +281,7 @@ public class UICreator {
     /**
      * Create a layout to which we add a histogram.
      */
-    public void addHistogramLayout()
+    public RelativeLayout addMoreInfoLayout()
     {
         heightHistogramView = heightScr / 3;
         widthHistogramView = widthScr - 70;
@@ -291,6 +291,8 @@ public class UICreator {
                 (widthHistogramView, heightHistogramView);
         problemParams.leftMargin = 10;
         root.addView(histogramLayout, problemParams);
+        histogramLayout.setLongClickable(true);
+        return histogramLayout;
     }
 
     // this method adds the background to the answer views, so that the alignment is correct
@@ -334,7 +336,7 @@ public class UICreator {
     }
 
     /**
-     * create a layout to add a ListView to, where the bugs will be shown.
+     * create a layout to add a ListView to, where the problemBugsTotal will be shown.
      */
     public void addBugLayout()
     {
@@ -351,9 +353,9 @@ public class UICreator {
     }
 
     /**
-     * Creates a list of all the bugs that occurred.
+     * Creates a list of all the problemBugsTotal that occurred.
      *
-     * @param adapter the adapter containing all the Strings, describing all the bugs
+     * @param adapter the adapter containing all the Strings, describing all the problemBugsTotal
      * @return a ListView to which the activity can add an onItemClickListener
      */
     public AdapterView addListView(ArrayAdapter<String> adapter)

@@ -9,72 +9,59 @@ import java.util.Arrays;
  */
 public class Analysis {
 
-    private static int manipulation;
+    private int manipulation;
 
-    protected static int[][] problems;
-    protected static ArrayList<int[]> bugs;
-    private static int amountBugs = 13;
-    private static ArrayList<int[]> uniqueBugs;
-    private static ArrayList<Integer> occurrences;
-    private static int[] occurrencesSorted;
-    protected static int totalAmountBugs;
-    private static int[] indicesDecreasingRatio;
+    protected int[][] problems;
+    protected ArrayList<int[]> uniqueProblemBugsTotal;
+    protected ArrayList<int[]> uniqueBugs;
+    protected ArrayList<int[]> uniqueAnswerBugsTotal;
+    protected ArrayList<Integer> occurrences;
+
+    protected ArrayList<Integer> occurrencesAnswerBugsTotal;
+    protected ArrayList<Integer> occurrencesProblemBugsTotal;
+    private int[] occurrencesSorted;
+    protected int totalAmountBugs;
+    private int[] indicesDecreasingRatio;
+    protected ArrayList<int[]> occurrencesPerProblem;
 
 
     public Analysis(int manipulation_in, int[][] problems_in)
     {
+        totalAmountBugs = 0;
         manipulation = manipulation_in;
         problems = problems_in;
         uniqueBugs = new ArrayList<int[]>();
         occurrences = new ArrayList<Integer>();
     }
 
-
-
-
-    public ArrayList<Integer> getOccurrences()
+    public void setProblems(int[][] problems_in)
     {
-        return occurrences;
+        problems = problems_in;
     }
 
     /**
-     * handleBugs will create a list of bugs and how often they occurred. It will call the Analysis
+     * handleBugs will create a list of problemBugsTotal and how often they occurred. It will call the Analysis
      * class corresponding to the manipulation.
      */
-    public void handleBugs(ArrayList<int[]> bugs)
+    public void handleBugs(ArrayList<int[]> bugs, int problem)
     {
         int amountBugsProblem = bugs.size();
         for (int j = 0; j < amountBugsProblem; j++)
         {
             totalAmountBugs++;
             int[] bug = bugs.get(j);
+            // check whether a bug already exists in this list
             if (!alreadyAdded(bug))
             {
+                // if not, add them
                 uniqueBugs.add(bug);
                 occurrences.add(1);
             } else
             {
+                // if so, increase the occurrence of that bug
                 int index = getIndex(bug, uniqueBugs);
                 int currentValue = occurrences.get(index);
                 occurrences.set(index, currentValue + 1);
-            }
-            if (bug.length > 1)
-            {
-                for (int k = 0; k < bug.length; k++)
-                {
-                    int[] singleEntry = new int[1];
-                    singleEntry[0] = bug[k];
-                    if (!alreadyAdded(singleEntry))
-                    {
-                        uniqueBugs.add(singleEntry);
-                        occurrences.add(1);
-                    } else
-                    {
-                        int index = getIndex(singleEntry, uniqueBugs);
-                        int currentValue = occurrences.get(index);
-                        occurrences.set(index, currentValue + 1);
-                    }
-                }
             }
         }
     }
@@ -162,7 +149,12 @@ public class Analysis {
         int i = 0;
     }
 
-    // get the index of a specific bug that was already added.
+    /**
+     * Get the index of a specific bug that was already added.
+     * @param bug the bug of which we want to find the index
+     * @param bugList the list we want to find the bug in
+     * @return the index of the bug in bugList
+     */
     public int getIndex(int[] bug, ArrayList<int[]> bugList)
     {
         for (int i = 0; i < bugList.size(); i++)
@@ -179,9 +171,9 @@ public class Analysis {
 
 
     /**
-     * Sort the list of bugs by how often they have occurred.
+     * Sort the list of problemBugsTotal by how often they have occurred.
      *
-     * @return a sorted list of bugs
+     * @return a sorted list of problemBugsTotal
      */
     public int[][] getSortedBugs()
     {

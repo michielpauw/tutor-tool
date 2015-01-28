@@ -11,23 +11,23 @@ import android.view.View;
  * background would either make the text too small, or not aligned properly.
  */
 public class DrawView extends View {
-    private static int x;
-    private static int y;
-    private static int radius;
-    private static int amount;
-    private static int width;
-    private static int xOriginal;
-    private static int xCurrentlySelected;
-    private static int yCurrentlySelected;
-    private static int type;
-    private static int widthView;
-    private static int heightView;
-    private static float[] ratio;
-    private static int rectangleWidth;
-    private static int widthFull;
-    private static int heightFull;
-    private static int amountBugs;
-    private static int highlighted;
+    private int x;
+    private int y;
+    private int radius;
+    private int amount;
+    private int width;
+    private int xOriginal;
+    private int xCurrentlySelected;
+    private int yCurrentlySelected;
+    private int type;
+    private int widthView;
+    private int heightView;
+    private float[] ratio;
+    private int rectangleWidth;
+    private int widthFull;
+    private int heightFull;
+    private int amountBugs;
+    private int highlighted;
 
     public DrawView(Context context)
     {

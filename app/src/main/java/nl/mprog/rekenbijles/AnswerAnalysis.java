@@ -1,47 +1,61 @@
 package nl.mprog.rekenbijles;
 
+import java.util.ArrayList;
+
 /**
  * Created by michielpauw on 23/01/15.
+ * Child class of analysis, specialized in analysing the answers provided.
  */
-public class AnswerAnalysis extends Analysis{
+public class AnswerAnalysis extends Analysis {
 
-    private static int[][] answers;
+    private ArrayList<int[]> answers;
+    private ArrayList<int[]> bugsSingle;
 
     public AnswerAnalysis(int manipulation_in, int answer_amount, int[][] problems_in)
     {
         super(manipulation_in, problems_in);
-        answers = new int[answer_amount][];
+        answers = new ArrayList<int[]>();
     }
 
-
-    // enter an answer array into the answers array, so I keep track of all answers
-    public void enterAnswer(int[] answer, int position)
+    public void clearAnswerList()
     {
-        answers[position] = answer;
+        answers = new ArrayList<int[]>();
     }
 
+    /**
+     * Enter a given answer to answers list.
+     *
+     * @param answer the answer to be added
+     */
+    public void enterAnswer(int[] answer)
+    {
+        answers.add(answer);
+    }
+
+    /**
+     * Given answers to the problems, analyze which bugs occur.
+     */
     public void runAnalysis()
     {
-        int amount = answers.length;
+        int amount = answers.size();
         int[][][] allBugs = new int[amount][][];
 
-        totalAmountBugs = 0;
+        occurrencesPerProblem = new ArrayList<int[]>();
         for (int i = 0; i < amount; i++)
         {
-            int[] problem = new int[2];
-            problem = problems[i];
-            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers[i]);
+            int[] problem = problems[i];
+            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers.get(i));
             subAnalysis.runAnalysis(4, true);
-            bugs = subAnalysis.getBugs();
-            handleBugs(bugs);
+            bugsSingle = subAnalysis.getBugs();
+            handleBugs(bugsSingle, i);
         }
     }
 
     /**
-     * Creates a list of Strings describing all the bugs that occurred.
+     * Creates a list of Strings describing all the problemBugsTotal that occurred.
      *
-     * @param bugs the bugs that need to be explained in words
-     * @return a list of Strings that describe the bugs that occurred.
+     * @param bugs the problemBugsTotal that need to be explained in words
+     * @return a list of Strings that describe the problemBugsTotal that occurred.
      */
     public String[] getBugsString(int[][] bugs)
     {
@@ -54,7 +68,7 @@ public class AnswerAnalysis extends Analysis{
             String currentBugEntry = " " + Integer.toString(i + 1) + ": ";
             for (int j = 0; j < lengthBug; j++)
             {
-                String toAdd = getBugPartString(bug[j], 1);
+                String toAdd = getBugPartString(bug[j]);
                 String temp = new String(currentBugEntry);
                 currentBugEntry = temp + toAdd;
                 String temp2 = new String(currentBugEntry);
@@ -68,15 +82,26 @@ public class AnswerAnalysis extends Analysis{
         return namesBugs;
     }
 
-    public String getBugPartString(int bug, int manipulation)
+    /**
+     * Get a bit of string which describes a possible bug.
+     *
+     * @param bug the bug we want to describe
+     * @return a bit of string describing the bug
+     */
+    public String getBugPartString(int bug)
     {
         String[] possibleSubtractionBugs = new String[]
-                {"de eerste vergelijker", "de boolean in de eerste lener", "het optellen van tien" +
-                        " in de eerste lener", "de eerste aftrekker", "de boolean in de eerste" +
-                        " nuller", "het verminderen van de waarde in de nuller", "de tweede" +
-                        " vergelijker", "de boolean in de tweede lener", "het optellen van tien" +
-                        " in de tweede lener", "de tweede aftrekker", "de of-manipulatie",
-                        "de derde aftrekker", "de vierde aftrekker"};
+                {"C1 altijd waar", "B1 altijd onwaar", "B1 voegt nooit tien toe",
+                        "de eerste aftrekker", "de nuller altijd onwaar",
+                        "het verminderen van de waarde in de nuller", "C2 altijd waar",
+                        "B2 altijd onwaar", "B2 voegt nooit tien toe",
+                        "de tweede aftrekker", "de of-manipulatie is altijd waar",
+                        "de derde aftrekker", "de vierde aftrekker", "C1 altijd onwaar",
+                        "B1 altijd " +
+                        "waar", "Z altijd waar", "C2 altijd onwaar",
+                        "B2 altijd waar", "B1 voegt altijd tien toe",
+                        "B1 voegt altijd tien toe", "de of-operator is" +
+                        "nooit waar"};
         return possibleSubtractionBugs[bug];
     }
 }

@@ -7,23 +7,23 @@ import java.util.Arrays;
  */
 public class SubtractionAnalysis extends FindBugs {
 
-    private static boolean comparerOne;
-    private static int borrowerFirstValueOne;
-    private static int borrowerSecondValueOne;
-    private static int differencerFour;
-    private static int zeroerFirstValueOne;
-    private static int zeroerSecondValueOne;
-    private static boolean comparerTwo;
-    private static int borrowerFirstValueTwo;
-    private static int orOne;
-    private static int borrowerSecondValueTwo;
-    private static int differencerThree;
-    private static int differencerOne;
-    private static int differencerTwo;
+    private boolean comparerOne;
+    private int borrowerFirstValueOne;
+    private int borrowerSecondValueOne;
+    private int differencerFour;
+    private int zeroerFirstValueOne;
+    private int zeroerSecondValueOne;
+    private boolean comparerTwo;
+    private int borrowerFirstValueTwo;
+    private int orOne;
+    private int borrowerSecondValueTwo;
+    private int differencerThree;
+    private int differencerOne;
+    private int differencerTwo;
 
-    private static boolean comparerBuggy;
-    private static boolean borrowerFirstBuggy;
-    private static boolean zeroerFirstBuggy;
+    private boolean comparerBuggy;
+    private boolean borrowerFirstBuggy;
+    private boolean zeroerFirstBuggy;
 
     public SubtractionAnalysis(int[] problem_in, int[] answer_in)
     {
@@ -75,7 +75,7 @@ public class SubtractionAnalysis extends FindBugs {
         // answer provided
         if (analysis)
         {
-            // if this configuration of bugs gives wrong digits at the same places as the answer given,
+            // if this configuration of problemBugsTotal gives wrong digits at the same places as the answer given,
             // then we say the configuration can be responsible for the wrong answer.
             if (Arrays.equals(rightDigitsAnalysis, rightDigit) && !Arrays.equals(rightDigit, allRight))
             {
@@ -103,27 +103,27 @@ public class SubtractionAnalysis extends FindBugs {
     {
         // doing subtraction step by step, to get expected outcome of each gate
         comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo],
-                bugsProbe[0]);
+                bugsProbe[0], bugsProbe[13]);
         borrowerFirstValueOne = borrowerFirstValue(comparerOne,
-                bugsProbe[1]);
+                bugsProbe[1], bugsProbe[14]);
         borrowerSecondValueOne = borrowerSecondValue(comparerOne,
-                digitsProblemOne[lengthOne], bugsProbe[2]);
+                digitsProblemOne[lengthOne], bugsProbe[2], bugsProbe[18]);
         differencerFour = differencer(borrowerSecondValueOne, digitsProblemTwo[lengthTwo],
                 bugsProbe[3]);
         int[] buggyAnswer = new int[3];
         buggyAnswer[2] = differencerFour;
         zeroerFirstValueOne = zeroerFirstValue(borrowerFirstValueOne,
-                digitsProblemOne[lengthOne - 1], bugsProbe[4]);
+                digitsProblemOne[lengthOne - 1], bugsProbe[4], bugsProbe[15]);
         zeroerSecondValueOne = zeroerSecondValue(borrowerFirstValueOne,
                 digitsProblemOne[lengthOne - 1], bugsProbe[5]);
-        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], bugsProbe[6]);
-        borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, bugsProbe[7]);
+        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], bugsProbe[6], bugsProbe[16]);
+        borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, bugsProbe[7], bugsProbe[17]);
         borrowerSecondValueTwo = borrowerSecondValue(comparerTwo, zeroerSecondValueOne,
-                bugsProbe[8]);
+                bugsProbe[8], bugsProbe[19]);
         differencerThree = differencer(borrowerSecondValueTwo, digitsProblemTwo[lengthTwo - 1],
                 bugsProbe[9]);
         buggyAnswer[1] = differencerThree;
-        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, bugsProbe[10]);
+        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, bugsProbe[10], bugsProbe[20]);
         differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne, bugsProbe[11]);
         differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2],
                 bugsProbe[12]);
@@ -150,23 +150,25 @@ public class SubtractionAnalysis extends FindBugs {
     }
 
     // decide whether the number on top is greater or equal to the number below
-    public boolean comparer(int digitOne, int digitTwo, boolean buggy)
+    public boolean comparer(int digitOne, int digitTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
         // if gate buggy and input buggy, the output may not be buggy
-        if (buggy)
+        if (buggyAlwaysTrue || buggyAlwaysFalse)
         {
             comparerBuggy = true;
             // therefore we set all values to their non-buggy state
             if (digitOne < 0)
             {
                 comparerBuggy = false;
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 digitOne = -digitOne;
             }
             if (digitTwo < 0)
             {
                 comparerBuggy = false;
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 digitTwo = -digitTwo;
             }
         } else
@@ -174,26 +176,26 @@ public class SubtractionAnalysis extends FindBugs {
             comparerBuggy = false;
         }
 
-        // return the correct value if the program is not buggy, otherwise return opposite.
-        if ((Math.abs(digitOne) >= Math.abs(digitTwo) && !buggy) || (Math.abs(digitOne) < Math
-                .abs(digitTwo) && buggy))
+        if (((Math.abs(digitOne) >= Math.abs(digitTwo)) || buggyAlwaysTrue) && !buggyAlwaysFalse)
         {
             return true;
-        } else
+        }
+        else
         {
             return false;
         }
     }
 
     // if the top number is smaller, it needs to be incremented by ten (borrow)
-    public int borrowerFirstValue(boolean comparer, boolean buggy)
+    public int borrowerFirstValue(boolean comparer, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
-        if (buggy)
+        if (buggyAlwaysTrue || buggyAlwaysFalse)
         {
             borrowerFirstBuggy = true;
             if (comparerBuggy)
             {
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 borrowerFirstBuggy = false;
                 if (comparer)
                 {
@@ -208,7 +210,7 @@ public class SubtractionAnalysis extends FindBugs {
             borrowerFirstBuggy = false;
         }
         // return the correct value if the program is not buggy, otherwise return opposite
-        if ((comparer && !buggy) || (!comparer && buggy))
+        if ((comparer || buggyAlwaysFalse) && !buggyAlwaysTrue)
         {
             return 0;
         } else
@@ -217,20 +219,22 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int borrowerSecondValue(boolean comparer, int digitOne, boolean buggy)
+    public int borrowerSecondValue(boolean comparer, int digitOne, boolean buggyNeverIncrement, boolean buggyAlwaysIncrement)
     {
         // if the input is faulty and the gate buggy, we can assume the output may be non-buggy.
-        if (buggy)
+        if (buggyNeverIncrement || buggyAlwaysIncrement)
         {
             if (digitOne < 0)
             {
-                buggy = false;
+                buggyNeverIncrement = false;
+                buggyAlwaysIncrement = false;
                 digitOne = -digitOne;
             }
 
             if (comparerBuggy)
             {
-                buggy = false;
+                buggyNeverIncrement = false;
+                buggyAlwaysIncrement = false;
                 if (comparer)
                 {
                     comparer = false;
@@ -241,13 +245,33 @@ public class SubtractionAnalysis extends FindBugs {
             }
         }
 
+        if (buggyAlwaysIncrement)
+        {
+            if (comparer)
+            {
+                return -digitOne - 10;
+            }
+            else
+            {
+                return digitOne + 10;
+            }
+        }
+        if (buggyNeverIncrement)
+        {
+            if (!comparer)
+            {
+                return -digitOne;
+            }
+            else
+            {
+                return digitOne;
+            }
+        }
+
         // return the correct value if the program is not buggy, otherwise its negative for testing
-        if ((comparer && !buggy) || (!comparer && buggy))
+        if (comparer)
         {
             return digitOne;
-        } else if (buggy)
-        {
-            return -digitOne - 10;
         } else
         {
             return digitOne + 10;
@@ -280,35 +304,39 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int zeroerFirstValue(int borrow, int digit, boolean buggy)
+    public int zeroerFirstValue(int borrow, int digit, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
-        if (buggy)
+        if (buggyAlwaysFalse || buggyAlwaysTrue)
         {
             zeroerFirstBuggy = true;
             if (borrowerFirstBuggy)
             {
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 borrow = (borrow + 1) % 2;
             }
             if (digit < 0)
             {
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 digit = -digit;
             }
         }
-        if (borrow == 1 && digit == 0 && !buggy)
+
+        if (buggyAlwaysTrue)
+        {
+            return 1;
+        }
+
+        if (buggyAlwaysFalse)
+        {
+            return 0;
+        }
+
+        if (borrow == 1 && digit == 0)
         {
             zeroerFirstBuggy = false;
             return 1;
-        } else if (buggy)
-        {
-            if (borrow == 1 && digit == 0)
-            {
-                return 0;
-            } else
-            {
-                return 1;
-            }
         } else
         {
             zeroerFirstBuggy = false;
@@ -362,34 +390,40 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggy)
+    public int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
-        if (buggy)
+        if (buggyAlwaysFalse || buggyAlwaysTrue)
         {
             if (zeroerFirstBuggy)
             {
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 orBooleanOne = (orBooleanOne + 1) % 2;
             }
             if (borrowerFirstBuggy)
             {
-                buggy = false;
+                buggyAlwaysFalse = false;
+                buggyAlwaysTrue = false;
                 orBooleanTwo = (orBooleanTwo + 1) % 2;
             }
         }
-        if (orBooleanOne == 1 || orBooleanTwo == 1 && !buggy)
-        {
-            return 1;
-        } else if (buggy && orBooleanOne == 0 && orBooleanTwo == 0)
-        {
-            return 1;
-        } else if (buggy && orBooleanOne == 1 || orBooleanTwo == 1)
+
+        if (buggyAlwaysFalse)
         {
             return 0;
         }
+
+        if (buggyAlwaysTrue)
+        {
+            return 1;
+        }
+
+        if (orBooleanOne == 1 || orBooleanTwo == 1)
+        {
+            return 1;
+        } else
         {
             return 0;
         }
     }
-
 }
