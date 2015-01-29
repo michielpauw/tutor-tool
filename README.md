@@ -7,10 +7,10 @@ The purpose of this application is to diagnose bugs that occur in simple arithme
 © 2015 Michiel Pauw All Rights Reserved
 
 ##Screenshots##
-<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-29-35.jpeg" style="width: 200px;"/>
-<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-29-59.jpeg" style="width: 200px;"/>
-<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-30-11.jpeg" style="width: 200px;"/>
-<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-30-22.jpeg" style="width: 200px;"/>
+<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-29-35.jpeg" "width: 200px;"/>
+<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-29-59.jpeg" "width: 200px;"/>
+<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-30-11.jpeg" "width: 200px;"/>
+<img src="https://github.com/michielpauw/tutor-tool/blob/master/doc/Screenshot_2015-01-29-17-30-22.jpeg" "width: 200px;"/>
 
 App Icon (I have no licence for this icon): [link](https://www.iconfinder.com/icons/360887/addition_business_buy_calculation_cash_chart_currency_diagram_division_dollar_ecommerce_finance_financial_internet_marketing_maths_money_mulplying_office_online_payment_price_sale_seo_shop_shopping_statistics_subtraction_web_icon)
 
