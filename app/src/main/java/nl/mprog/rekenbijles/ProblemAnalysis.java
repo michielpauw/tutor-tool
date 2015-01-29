@@ -31,7 +31,8 @@ public class ProblemAnalysis extends Analysis {
         {
             int[] problem = new int[2];
             problem = problems[i];
-            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, nullAnswer, 3, false);
+            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, nullAnswer, 3,
+                    false);
             subAnalysis.runAnalysis();
             // get all the bugs that could occur in this specific problem
             bugs = subAnalysis.getBugs();

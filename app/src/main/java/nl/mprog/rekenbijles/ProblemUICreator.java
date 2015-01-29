@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 /**
  * Created by Michiel Pauw on 28/01/15.
- * <p/>
  * This child of UICreator generates all the Layouts and Views that are used when problems
  * are shown.
  */

@@ -53,6 +53,8 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     private ArrayAdapter<String> adapterHelp;
     private ArrayAdapter<String> adapterBugs;
     private boolean bugListVisible;
+    private TextView amountBug;
+    MoreInfoUICreator moreInfoUICreator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -221,9 +223,15 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
         currentLayout.removeAllViews();
 
-        MoreInfoUICreator moreInfoUICreator = new MoreInfoUICreator(this.getApplicationContext(),
+        moreInfoUICreator = new MoreInfoUICreator(this.getApplicationContext(),
                 this);
 
+        createTopHypothesis();
+        createBottomHypothesis();
+    }
+
+    private void createTopHypothesis()
+    {
         // create a layout in which more info can be shown
         moreInfo = moreInfoUICreator.addMoreInfoLayout();
         moreInfo.setOnTouchListener(this);
@@ -244,25 +252,17 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         }
 
         moreInfoUICreator.addHistogram(ratio, highlighted);
-        moreInfoUICreator.addAmountBug(amountOfSpecificBug);
-        moreInfoUICreator.addBugLayout();
+        amountBug = moreInfoUICreator.addAmountBug(occurrencesSorted[highlighted]);
+
         ArrayList<int[]> allAnswers = analyze.getAllAnswers();
         moreInfoUICreator.addMoreInfo(allProblems, occurrencesPerProblem, highlighted, bugs,
                 moreInfo, allAnswers);
+    }
 
-        // create two navigation buttons
-        moreInfoUICreator.addBottomLayout();
-        RelativeLayout bottomLayout = moreInfoUICreator.getBottomLayout();
-        Button backButton = moreInfoUICreator.createButton("Terug", bottomLayout, 0);
-        Button continueButton = moreInfoUICreator.createButton("Verder", bottomLayout, 1);
-
-        backButton.setTag(101);
-        continueButton.setTag(102);
-
-        backButton.setOnClickListener(this);
-        continueButton.setOnClickListener(this);
-
+    private void createBottomHypothesis()
+    {
         // create a list of Strings describing all the bugs
+        moreInfoUICreator.addBugLayout();
         adapterBugs = new ArrayAdapter<String>(this, R.layout.bug_list_item,
                 bugsString);
         adapterHelp = new ArrayAdapter<String>(this, R.layout.bug_list_item,
@@ -276,6 +276,19 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         }
         adapterView.setOnItemClickListener(this);
         adapterView.setOnTouchListener(this);
+
+        // create two navigation buttons
+        moreInfoUICreator.addBottomLayout();
+        RelativeLayout bottomLayout = moreInfoUICreator.getBottomLayout();
+        Button backButton = moreInfoUICreator.createButton("Terug", bottomLayout, 0);
+        Button continueButton = moreInfoUICreator.createButton("Verder", bottomLayout, 1);
+
+        backButton.setTag(101);
+        continueButton.setTag(102);
+
+        backButton.setOnClickListener(this);
+        continueButton.setOnClickListener(this);
+
     }
 
     // highlight a bar in the histogram after its corresponding bug was clicked
@@ -284,7 +297,10 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     {
         highlighted = i;
         amountOfSpecificBug = occurrencesSorted[i];
-        createHypothesisInterface();
+        histogram.removeAllViews();
+        moreInfo.removeAllViews();
+        createTopHypothesis();
+//        createHypothesisInterface();
     }
 
     // implement a swipe function on the histogram / more info view
@@ -330,8 +346,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         if (view instanceof RelativeLayout)
         {
             return true;
-        }
-        else
+        } else
         {
             return false;
         }

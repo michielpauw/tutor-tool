@@ -28,7 +28,8 @@ public class SubtractionAnalysis extends BuggyHandler {
     private boolean borrowerFirstBuggy;
     private boolean zeroerFirstBuggy;
 
-    public SubtractionAnalysis(int[] problem_in, int[] answer_in, int maxBugLengthIn, boolean answerAnalysisIn)
+    public SubtractionAnalysis(int[] problem_in, int[] answer_in, int maxBugLengthIn,
+                               boolean answerAnalysisIn)
     {
         // the argument 21 is the amount of gates that this manipulation has to go through
         // (including some gates that can be buggy in more than one way)

@@ -2,13 +2,8 @@ package nl.mprog.rekenbijles;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -108,9 +103,9 @@ public class MoreInfoUICreator extends UICreator {
         histogramBars.initializeRectangle(widthMoreInfoLayout, heightMoreInfoLayout + 20, ratio,
                 highlighted);
         int barWidth = histogramBars.getRectangleWidth();
-        createHistogramLegend(barWidth, ratio);
         // add the View to moreInfoLayout
         moreInfoLayout.addView(histogramBars);
+        createHistogramLegend(barWidth, ratio);
     }
 
 
@@ -118,7 +113,7 @@ public class MoreInfoUICreator extends UICreator {
     private void createHistogramLegend(int barWidth, float[] ratio)
     {
 
-        int y = heightMoreInfoLayout - 100;
+        int y = heightMoreInfoLayout - 70;
         int amount = ratio.length;
         // there are as many numbers as there are bugs
         for (int i = 0; i < amount; i++)
@@ -151,22 +146,24 @@ public class MoreInfoUICreator extends UICreator {
     }
 
     // adds a simple TextView which shows the amount a specific bug has occurred
-    public void addAmountBug(int amount)
+    public TextView addAmountBug(int amount)
     {
         TextView bugAmountView = new TextView(activity);
         RelativeLayout.LayoutParams bugAmountParams = new RelativeLayout.LayoutParams
-                (widthBugLayout, heightBugLayout);
+                (widthMoreInfoLayout, heightMoreInfoLayout);
         bugAmountParams.leftMargin = (widthMoreInfoLayout / 5) * 3;
         bugAmountParams.topMargin = 30;
         bugAmountView.setText("Amount: " + Integer.toString(amount));
         bugAmountView.setTextSize(15);
         bugAmountView.setTextColor(activity.getResources().getColor(R.color.white));
         moreInfoLayout.addView(bugAmountView, bugAmountParams);
+        return bugAmountView;
     }
 
     // add a view which shows problems in which a specific bug occurred
     public void addMoreInfo(ArrayList<int[]> problems, ArrayList<ArrayList<Integer>> occurrences,
-                            int highlighted, int[][] bugs, RelativeLayout layout, ArrayList<int[]> answers)
+                            int highlighted, int[][] bugs, RelativeLayout layout,
+                            ArrayList<int[]> answers)
     {
         // get the problems which involved a bug that was clicked
         ArrayList<Integer> problemsWithBug = occurrences.get(highlighted);
@@ -190,13 +187,13 @@ public class MoreInfoUICreator extends UICreator {
     {
         TextView header = new TextView(activity);
         header.setWidth(widthMoreInfoLayout);
-        header.setHeight(heightMoreInfoLayout / 5);
+        header.setHeight(heightMoreInfoLayout / 4);
         if (amount == 1)
         {
-            header.setText("Probleem met deze bug");
+            header.setText("Probleem met deze bug\nen het goede antwoord");
         } else
         {
-            header.setText("Problemen met deze bug");
+            header.setText("Problemen met deze bug\nen de goede antwoorden");
         }
         header.setTextSize(20);
         header.setTypeface(Typeface.DEFAULT_BOLD);
@@ -211,11 +208,11 @@ public class MoreInfoUICreator extends UICreator {
     {
         RelativeLayout moreInfoProblem = new RelativeLayout(activity);
         int width = widthMoreInfoLayout / total - 10;
-        int height = (heightMoreInfoLayout / 5) * 4;
+        int height = (heightMoreInfoLayout / 4) * 3;
         RelativeLayout.LayoutParams moreInfoParams = new RelativeLayout.LayoutParams
                 (width - 20, height);
         moreInfoParams.leftMargin = index * width + 10;
-        moreInfoParams.topMargin = heightMoreInfoLayout / 5;
+        moreInfoParams.topMargin = heightMoreInfoLayout / 4;
 
         moreInfoProblem.setBackgroundColor(activity.getResources().getColor(R.color.primary2));
         moreInfoProblem.setGravity(Gravity.CENTER);
@@ -229,18 +226,25 @@ public class MoreInfoUICreator extends UICreator {
     // create a TextView with in simple text the problem we want to show
     private TextView createSmallTextViews(int[] problem, int[] answer)
     {
-        String answerString = Utilities.arrayToString(answer);
         TextView problemText = new TextView(activity);
+        problemText.setTextSize(20);
         problemText.setGravity(Gravity.RIGHT);
         problemText.setTextColor(activity.getResources().getColor(R.color.accent));
         problemText.setTypeface(Typeface.DEFAULT_BOLD);
+        // create a string containing the incorrect answer
+        String answerString = Utilities.arrayToString(answer);
         String problemString = "";
+        // append both parts of the problem to a string
         for (int i = 0; i < 2; i++)
         {
             int problemPart = problem[i];
             problemString += Integer.toString(problemPart) + "<br>";
         }
-        String toAdd = "<font color=3FF8A80>" + problemString + "</font> <font color=#ffffff>" + answerString + "</font>";
+        // create a string containing the correct answer
+        String correctAnswer = Integer.toString(problem[0] - problem[1]);
+        // use HTML to have more than one color in one TextView
+        String toAdd = "<font color=3FF8A80>" + problemString + "</font> <font color=#ff0000> X " +
+                answerString + "<br><br></font><font color=#ffffff> > " + correctAnswer;
         problemText.setText(Html.fromHtml(toAdd));
         return problemText;
     }
