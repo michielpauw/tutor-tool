@@ -9,6 +9,7 @@ The purpose of this application is to diagnose bugs that occur in simple arithme
 ##Screenshots##
 I've created a separate wiki for my screenshots, because it seems to be impossible to resize them. They are a little bit too large for the ReadMe.
 
+##Acknowledgements##
 App Icon (I have no licence for this icon): [link](https://www.iconfinder.com/icons/360887/addition_business_buy_calculation_cash_chart_currency_diagram_division_dollar_ecommerce_finance_financial_internet_marketing_maths_money_mulplying_office_online_payment_price_sale_seo_shop_shopping_statistics_subtraction_web_icon)
 
 Articles used:
