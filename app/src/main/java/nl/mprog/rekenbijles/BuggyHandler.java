@@ -29,8 +29,8 @@ public class BuggyHandler {
     private int[] currentGatesProbed;
     private boolean continueAnalysis = true;
 
-    private int maxBugLength;
-    private boolean answerAnalysis;
+    protected int maxBugLength;
+    protected boolean answerAnalysis;
 
     private IterationGates iteration;
 
@@ -53,7 +53,7 @@ public class BuggyHandler {
     }
 
     // setup the analysis with initial values
-    public boolean setupAnalysis(int maxBugLengthIn, boolean analysisIn)
+    public boolean setupAnalysis()
     {
         // check whether there should be analysis, if an answer is correct, analysis is useless
         int answerLength = answerProvided.length;
@@ -75,10 +75,6 @@ public class BuggyHandler {
             return false;
         }
 
-        // check whether it's a problemAnalysis or an answerAnalysis
-        answerAnalysis = analysisIn;
-        maxBugLength = maxBugLengthIn;
-
         answerManipulated = new int[answerLength];
         continueAnalysis = true;
 
@@ -90,6 +86,8 @@ public class BuggyHandler {
     }
 
     // if a configuration is buggy, the tuple of gates will be removed from the to test list
+    // the argument comes from the Child Class (SubtractionAlgorithm) and tells whether current
+    // configuration is buggy.
     public boolean analyseSteps(boolean buggy)
     {
         // the chance of finding five problemBugsTotal responsible for a wrong answer is small

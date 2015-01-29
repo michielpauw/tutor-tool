@@ -31,8 +31,8 @@ public class ProblemAnalysis extends Analysis {
         {
             int[] problem = new int[2];
             problem = problems[i];
-            SubtractionAlgorithm subAnalysis = new SubtractionAlgorithm(problem, nullAnswer);
-            subAnalysis.runAnalysis(3, false);
+            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, nullAnswer, 3, false);
+            subAnalysis.runAnalysis();
             // get all the bugs that could occur in this specific problem
             bugs = subAnalysis.getBugs();
             // add the bugs to a bug list
@@ -45,7 +45,7 @@ public class ProblemAnalysis extends Analysis {
     {
         int[] nullAnswer = new int[] {0, 0, 0};
         int[] problem = problems[0];
-        SubtractionAlgorithm subAnalysis = new SubtractionAlgorithm(problem, nullAnswer);
+        SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, nullAnswer, 1, false);
         boolean toReturn = subAnalysis.runSpecificAnalysis(bug);
         return toReturn;
     }
