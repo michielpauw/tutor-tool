@@ -7,9 +7,54 @@
     <string name="title_activity_reken">RekenActivity</string>
     
 	<string-array name="manipulations">
-        <item>Optellen</item>
         <item>Aftrekken</item>
-        <item>Vermenigvuldigen</item>
-        <item>Delen</item>
+    </string-array>
+    <string-array name="help">
+        <item>je wilt altijd het onderste getal van het bovenste getal aftrekken</item>
+        <item>als je leent in de rechter kolom, onthoud dan dat je dat van de middelste kolom hebt geleend</item>
+        <item>je wilt niet vergeten bij het bovenste getal tien op te tellen als je leent</item>
+        <item>je wilt misschien aan iemand vragen hoe je goed enkele getallen aftrekt</item>
+        <item>als in de middelste kolom nul boven staat en je leent hiervan, vergeet dan niet de linker kolom met één te verminderen</item>
+        <item>als je leent in de rechter kolom, dan wil je in de kolom er links van één aftrekken</item>
+        <item>je wilt altijd het onderste getal van het bovenste getal aftrekken</item>
+        <item>als je leent in de middelste kolom, onthoud dan dat je dat van de linker kolom hebt geleend</item>
+        <item>je wilt niet vergeten bij het bovenste getal tien op te tellen als je leent</item>
+        <item>je wilt misschien aan iemand vragen hoe je goed enkele getallen aftrekt</item>
+        <item>je wilt niet altijd één aftrekken in de linker kolom</item>
+        <item>je wilt misschien aan iemand vragen hoe je goed enkele getallen aftrekt</item>
+        <item>je wilt misschien aan iemand vragen hoe je goed enkele getallen aftrekt</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>je wilt niet altijd het lenen, alleen als het onderste getal groter is dan het onderste</item>
+        <item>als je in de middelste kolom leent, dan moet je in de linker kolom één aftrekken</item>
+    </string-array>
+
+    <string-array name="bugs">
+        <item>de eerste vergelijker is altijd waar</item>
+        <item>de eerste lener geeft niet aan dat er geleend wordt</item>
+        <item>de eerste lener voegt geen tien toe</item>
+        <item>bij de eerste aftrekker gaat iets fout</item>
+        <item>de nuller geeft niet aan dat er geleend wordt</item>
+        <item>de nuller vermindert de waarde van het getal niet</item>
+        <item>de tweede vergelijker is altijd waar</item>
+        <item>de tweede lener geeft niet aan dat er geleend wordt</item>
+        <item>de tweede lener voegt geen tien toe</item>
+        <item>bij de tweede aftrekker gaat iets fout</item>
+        <item>er wordt altijd geleend uit de linker kolom</item>
+        <item>bij de derde aftrekker gaat iets fout</item>
+        <item>bij de vierde aftrekker gaat iets fout</item>
+        <item>de eerste vergelijker is altijd onwaar</item>
+        <item>de eerste lener geeft altijd aan dat er geleend wordt</item>
+        <item>de nuller geeft altijd aan dat er geleend wordt</item>
+        <item>de tweede vergelijker is altijd onwaar</item>
+        <item>de tweede lener geeft altijd aan dat er geleend wordt</item>
+        <item>de eerste lener voegt altijd tien toe</item>
+        <item>de tweede lener voegt altijd tien toe</item>
+        <item>de waarde in de linker kolom wordt nooit verminderd na lenen</item>
+        <item>Aftrekken</item>
     </string-array>
 </resources>

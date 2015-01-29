@@ -3,9 +3,12 @@ package nl.mprog.rekenbijles;
 import java.util.Arrays;
 
 /**
- * Created by michielpauw on 19/01/15.
+ * Created by Michiel Pauw on 19/01/15.
+ * This class implements the algorithm of subtraction. It can also accept a boolean array which
+ * tells specific gates to perform buggy. It will check whether a buggy gate accounts for a buggy
+ * answer entered by the user.
  */
-public class SubtractionAnalysis extends FindBugs {
+public class SubtractionAnalysis extends BugHandler {
 
     private boolean comparerOne;
     private int borrowerFirstValueOne;
@@ -27,7 +30,7 @@ public class SubtractionAnalysis extends FindBugs {
 
     public SubtractionAnalysis(int[] problem_in, int[] answer_in)
     {
-        super(problem_in, answer_in);
+        super(problem_in, answer_in, 21);
         comparerBuggy = false;
         borrowerFirstBuggy = false;
         zeroerFirstBuggy = false;
@@ -44,7 +47,6 @@ public class SubtractionAnalysis extends FindBugs {
             bugsProbe = getProbes();
             if (bugsProbe.length == 0)
             {
-                continueAnalysis = false;
                 break;
             }
             boolean buggy = subtractionAlgorithm(answerAnalysis);
@@ -52,6 +54,7 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
+    // check whether a problem will return a buggy answer when a specific bug is true
     public boolean runSpecificAnalysis(int[] bug)
     {
         bugsProbe = new boolean[amountGates];
@@ -66,7 +69,7 @@ public class SubtractionAnalysis extends FindBugs {
         return buggy;
     }
 
-    public boolean subtractionAlgorithm(boolean analysis)
+    private boolean subtractionAlgorithm(boolean analysis)
     {
         int[] buggyAnswer = subtractionSteps();
         boolean[] allRight = new boolean[] {true, true, true};
@@ -99,9 +102,10 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int[] subtractionSteps()
+    private int[] subtractionSteps()
     {
         // doing subtraction step by step, to get expected outcome of each gate
+        // the boolean values indicate whether (a part of) a gate is buggy
         comparerOne = comparer(digitsProblemOne[lengthOne], digitsProblemTwo[lengthTwo],
                 bugsProbe[0], bugsProbe[13]);
         borrowerFirstValueOne = borrowerFirstValue(comparerOne,
@@ -132,7 +136,8 @@ public class SubtractionAnalysis extends FindBugs {
         return buggyAnswer;
     }
 
-    public boolean[] getRightDigitsAnalysis(int[] buggyAnswer)
+    // create a boolean array with true if a digit from the buggy corresponds to the correct answer
+    private boolean[] getRightDigitsAnalysis(int[] buggyAnswer)
     {
         boolean[] rightDigitsAnalysis = new boolean[3];
 
@@ -150,7 +155,7 @@ public class SubtractionAnalysis extends FindBugs {
     }
 
     // decide whether the number on top is greater or equal to the number below
-    public boolean comparer(int digitOne, int digitTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private boolean comparer(int digitOne, int digitTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
         // if gate buggy and input buggy, the output may not be buggy
         if (buggyAlwaysTrue || buggyAlwaysFalse)
@@ -187,8 +192,9 @@ public class SubtractionAnalysis extends FindBugs {
     }
 
     // if the top number is smaller, it needs to be incremented by ten (borrow)
-    public int borrowerFirstValue(boolean comparer, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private int borrowerFirstValue(boolean comparer, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
+        // if gate buggy and input buggy, the output may not be buggy
         if (buggyAlwaysTrue || buggyAlwaysFalse)
         {
             borrowerFirstBuggy = true;
@@ -219,7 +225,7 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int borrowerSecondValue(boolean comparer, int digitOne, boolean buggyNeverIncrement, boolean buggyAlwaysIncrement)
+    private int borrowerSecondValue(boolean comparer, int digitOne, boolean buggyNeverIncrement, boolean buggyAlwaysIncrement)
     {
         // if the input is faulty and the gate buggy, we can assume the output may be non-buggy.
         if (buggyNeverIncrement || buggyAlwaysIncrement)
@@ -245,10 +251,12 @@ public class SubtractionAnalysis extends FindBugs {
             }
         }
 
+        // when the borrower always increments, it always adds 10
         if (buggyAlwaysIncrement)
         {
             if (comparer)
             {
+                // a negative digit represents a currently buggy digit
                 return -digitOne - 10;
             }
             else
@@ -256,6 +264,7 @@ public class SubtractionAnalysis extends FindBugs {
                 return digitOne + 10;
             }
         }
+        // when the borrower never increments, it never adds 10
         if (buggyNeverIncrement)
         {
             if (!comparer)
@@ -278,7 +287,7 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int differencer(int digitOne, int digitTwo, boolean buggy)
+    private int differencer(int digitOne, int digitTwo, boolean buggy)
     {
         // once again, if input is faulty and gate is buggy, it may return a correct value
         if (buggy)
@@ -295,6 +304,7 @@ public class SubtractionAnalysis extends FindBugs {
             }
         }
 
+        // return the correct value if the program is not buggy, otherwise its negative for testing
         if (!buggy && !(digitOne < 0 || digitTwo < 0))
         {
             return Math.abs(digitOne) - Math.abs(digitTwo);
@@ -304,8 +314,9 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int zeroerFirstValue(int borrow, int digit, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private int zeroerFirstValue(int borrow, int digit, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
+        // once again, if input is faulty and gate is buggy, it may return a correct value
         if (buggyAlwaysFalse || buggyAlwaysTrue)
         {
             zeroerFirstBuggy = true;
@@ -323,6 +334,8 @@ public class SubtractionAnalysis extends FindBugs {
             }
         }
 
+        // the first value of the zeroer can either be true or false, so buggy means: always true
+        // or always false
         if (buggyAlwaysTrue)
         {
             return 1;
@@ -344,8 +357,9 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int zeroerSecondValue(int borrow, int digit, boolean buggy)
+    private int zeroerSecondValue(int borrow, int digit, boolean buggy)
     {
+        // if input is faulty and gate is buggy, it may return a correct value
         if (buggy)
         {
             if (borrowerFirstBuggy)
@@ -360,6 +374,7 @@ public class SubtractionAnalysis extends FindBugs {
             }
         }
 
+        // handle a bug (i.e. do not decrement if necessary)
         if (borrow == 1 && digit == 0)
         {
             if (!buggy)
@@ -390,8 +405,9 @@ public class SubtractionAnalysis extends FindBugs {
         }
     }
 
-    public int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
     {
+        // if input is faulty and gate is buggy, it may return a correct value
         if (buggyAlwaysFalse || buggyAlwaysTrue)
         {
             if (zeroerFirstBuggy)
@@ -408,6 +424,7 @@ public class SubtractionAnalysis extends FindBugs {
             }
         }
 
+        // handle bugs
         if (buggyAlwaysFalse)
         {
             return 0;
@@ -418,6 +435,7 @@ public class SubtractionAnalysis extends FindBugs {
             return 1;
         }
 
+        // return the correct value
         if (orBooleanOne == 1 || orBooleanTwo == 1)
         {
             return 1;

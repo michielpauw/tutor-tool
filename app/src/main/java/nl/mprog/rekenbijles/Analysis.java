@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by michielpauw on 08/01/15.
+ * Created by Michiel Pauw on 08/01/15.
  * A class which delegates each manipulation to its supposed analysis.
  */
 public class Analysis {
@@ -12,17 +12,14 @@ public class Analysis {
     private int manipulation;
 
     protected int[][] problems;
-    protected ArrayList<int[]> uniqueProblemBugsTotal;
     protected ArrayList<int[]> uniqueBugs;
-    protected ArrayList<int[]> uniqueAnswerBugsTotal;
     protected ArrayList<Integer> occurrences;
-
-    protected ArrayList<Integer> occurrencesAnswerBugsTotal;
-    protected ArrayList<Integer> occurrencesProblemBugsTotal;
     private int[] occurrencesSorted;
     protected int totalAmountBugs;
     private int[] indicesDecreasingRatio;
-    protected ArrayList<int[]> occurrencesPerProblem;
+    protected ArrayList<ArrayList<Integer>> occurrencesPerProblem;
+    protected int problemNumber;
+    protected ArrayList<ArrayList<Integer>> occurrencesPerProblemSorted;
 
 
     public Analysis(int manipulation_in, int[][] problems_in)
@@ -32,6 +29,7 @@ public class Analysis {
         problems = problems_in;
         uniqueBugs = new ArrayList<int[]>();
         occurrences = new ArrayList<Integer>();
+        occurrencesPerProblem = new ArrayList<ArrayList<Integer>>();
     }
 
     public void setProblems(int[][] problems_in)
@@ -39,16 +37,15 @@ public class Analysis {
         problems = problems_in;
     }
 
-    /**
-     * handleBugs will create a list of problemBugsTotal and how often they occurred. It will call the Analysis
-     * class corresponding to the manipulation.
-     */
-    public void handleBugs(ArrayList<int[]> bugs, int problem)
+
+    // handleBugs will create a list of problemBugsTotal and how often they occurred
+    protected void handleBugs(ArrayList<int[]> bugs, int problem)
     {
         int amountBugsProblem = bugs.size();
         for (int j = 0; j < amountBugsProblem; j++)
         {
             totalAmountBugs++;
+            ArrayList<Integer> problemsForThisBug = new ArrayList<Integer>();
             int[] bug = bugs.get(j);
             // check whether a bug already exists in this list
             if (!alreadyAdded(bug))
@@ -56,23 +53,27 @@ public class Analysis {
                 // if not, add them
                 uniqueBugs.add(bug);
                 occurrences.add(1);
+                problemsForThisBug.add(problemNumber);
+                occurrencesPerProblem.add(problemsForThisBug);
+
             } else
             {
                 // if so, increase the occurrence of that bug
                 int index = getIndex(bug, uniqueBugs);
                 int currentValue = occurrences.get(index);
                 occurrences.set(index, currentValue + 1);
+                problemsForThisBug = occurrencesPerProblem.get(index);
+                problemsForThisBug.add(problemNumber);
+                occurrencesPerProblem.set(index, problemsForThisBug);
+
             }
         }
     }
 
-    /**
-     * Check whether a bug was already added to the uniqueBugs list.
-     *
-     * @param bug the bug that must be checked
-     * @return true if the bug was already added, false if not
-     */
-    public boolean alreadyAdded(int[] bug)
+
+
+    // check whether a specific bug was already added to the list
+    private boolean alreadyAdded(int[] bug)
     {
         boolean toReturn = false;
         int length = uniqueBugs.size();
@@ -86,9 +87,7 @@ public class Analysis {
         return false;
     }
 
-    /**
-     * @return a float array with the relative amount of times a bug occurred in the process.
-     */
+    // get the ratio of bugs that occurred to the total amount of bugs
     public float[] getRatio()
     {
         int length = occurrences.size();
@@ -100,6 +99,7 @@ public class Analysis {
 
         setIndicesDecreasingRatio(ratio);
         float[] toReturn = new float[length];
+        // sort them in decreasing order
         for (int i = 0; i < length; i++)
         {
             toReturn[i] = ratio[indicesDecreasingRatio[i]];
@@ -107,11 +107,7 @@ public class Analysis {
         return toReturn;
     }
 
-    /**
-     * Gets the order of indices of the float array from high value to low value.
-     *
-     * @param ratio float array which needs to be sorted high to low
-     */
+    // sort the indices in such a way that the most occurring bugs show up first
     public void setIndicesDecreasingRatio(float[] ratio)
     {
         int length = occurrences.size();
@@ -120,13 +116,16 @@ public class Analysis {
         int currentIndex = 0;
         float[] ratioCopy = new float[ratio.length];
         System.arraycopy(ratio, 0, ratioCopy, 0, ratio.length);
+        // loop until the list is completely sorted
         while (notSorted)
         {
             int indexHighest = 0;
             float highest = 0;
             notSorted = false;
+            // check whether there is a value that is higher than the currently highest value
             for (int i = 0; i < length; i++)
             {
+                // if so, set that as the highest
                 if (ratioCopy[i] > highest)
                 {
                     notSorted = true;
@@ -134,6 +133,7 @@ public class Analysis {
                     indexHighest = i;
                 }
             }
+            // add it to the list of ordered indices
             if (notSorted)
             {
                 indicesDecreasingRatio[currentIndex] = indexHighest;
@@ -149,13 +149,8 @@ public class Analysis {
         int i = 0;
     }
 
-    /**
-     * Get the index of a specific bug that was already added.
-     * @param bug the bug of which we want to find the index
-     * @param bugList the list we want to find the bug in
-     * @return the index of the bug in bugList
-     */
-    public int getIndex(int[] bug, ArrayList<int[]> bugList)
+    // get the index of a bug that already occurred previously
+    private int getIndex(int[] bug, ArrayList<int[]> bugList)
     {
         for (int i = 0; i < bugList.size(); i++)
         {
@@ -170,20 +165,19 @@ public class Analysis {
     }
 
 
-    /**
-     * Sort the list of problemBugsTotal by how often they have occurred.
-     *
-     * @return a sorted list of problemBugsTotal
-     */
+    // sort the list of problemBugsTotal by how often they have occurred
     public int[][] getSortedBugs()
     {
         int length = uniqueBugs.size();
         int[][] sortedBugs = new int[length][];
+        occurrencesPerProblemSorted = new ArrayList<ArrayList<Integer>>();
         occurrencesSorted = new int[occurrences.size()];
+
         for (int i = 0; i < length; i++)
         {
             occurrencesSorted[i] = occurrences.get(indicesDecreasingRatio[i]);
             sortedBugs[i] = uniqueBugs.get(indicesDecreasingRatio[i]);
+            occurrencesPerProblemSorted.add(occurrencesPerProblem.get(indicesDecreasingRatio[i]));
         }
         return sortedBugs;
     }
@@ -192,4 +186,5 @@ public class Analysis {
     {
         return occurrencesSorted;
     }
+
 }

@@ -1,22 +1,20 @@
 package nl.mprog.rekenbijles;
 
 /**
- * Created by michielpauw on 08/01/15.
- * An activity that shows an intuitive UI for solving arithmetic problems.
+ * Created by Michiel Pauw on 08/01/15.
+ * An activity that shows an intuitive UI for solving arithmetic problems, and when they're solved
+ * it shows a view providing information about the bugs that occurred.
  */
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,34 +22,37 @@ import java.util.ArrayList;
 public class ProblemActivity extends ActionBarActivity implements View.OnClickListener,
         AdapterView.OnItemClickListener, View.OnTouchListener {
 
-    Spinner spinner;
-    Button numberButton;
-    Button continueButton;
-    int numberClicked = 0;
-    TextView answerView;
-    int[] currentAnswer;
-    int currentProblem = 0;
-    int[][] problems;
-    int manipulation;
-    UICreator interfaceCreator;
-    AnswerAnalysis analyze;
-    int problemAmount = 1;
-    int blockAmount = 3;
-    int[][] bugs;
-    float[] ratio;
-    String[] bugsString;
-    ArrayList<Integer> occurrences;
-    int highlighted;
-    int amountOfSpecificBug;
-    int[] occurrencesSorted;
-    int[] problemOccurrences;
-    TextView currentlySelected;
-    int[][] problemBugs;
-    RelativeLayout histogram;
-    float xDown;
-    float xUp;
-    RelativeLayout moreInfo;
-    int[][] occurrencesPerProblem;
+    private Button numberButton;
+    private Button continueButton;
+    private int numberClicked = 0;
+    private TextView answerView;
+    private int[] currentAnswer;
+    private int currentProblem = 0;
+    private int[][] problems;
+    private ArrayList<int[]> allProblems;
+    private int manipulation;
+    private ProblemUICreator interfaceCreator;
+    private AnswerAnalysis analyze;
+    private int problemAmount = 1;
+    private int blockAmount = 3;
+    private int[][] bugs;
+    private float[] ratio;
+    private String[] bugsString;
+    private int highlighted;
+    private int amountOfSpecificBug;
+    private int[] occurrencesSorted;
+    private TextView currentlySelected;
+    private RelativeLayout histogram;
+    private float xDown;
+    private float xUp;
+    private RelativeLayout moreInfo;
+    private ArrayList<ArrayList<Integer>> occurrencesPerProblem;
+    private ProblemGenerator generator;
+    private boolean histogramVisible;
+    private AdapterView adapterView;
+    private ArrayAdapter<String> adapterHelp;
+    private ArrayAdapter<String> adapterBugs;
+    private boolean bugListVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,79 +67,119 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         manipulation = Integer.parseInt(intent.getStringExtra("manipulation"));
 
         // create an interfaceCreator which will create the interface dynamically
-        interfaceCreator = new UICreator(this.getApplicationContext(), this);
+        interfaceCreator = new ProblemUICreator(this.getApplicationContext(), this);
 
         // generate (ten) problems with the manipulation that was clicked
-        ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
+        generator = new ProblemGenerator(manipulation, problemAmount);
         problems = generator.generateNumbers();
+        allProblems = generator.getAllProblems();
         // create an AnalyzeAnswers object, so I can analyze the answers
-        analyze = new AnswerAnalysis(manipulation, problemAmount, problems);
+        analyze = new AnswerAnalysis(manipulation, problemAmount, problems, this);
+
+        histogramVisible = true;
+        bugListVisible = true;
 
         createInterface();
     }
 
     @Override
-    // all views that can be clicked have tags
     public void onClick(View v)
     {
+        // all views that can be clicked have tags
         int clicked = (Integer) v.getTag();
 
+        // between 0 and 10 means a number button was clicked
         if (clicked >= 0 && clicked < 10)
         {
-            // click on a number button
+            // click on a number Button
             numberClicked = clicked;
             currentlySelected.setText(Integer.toString(clicked));
-        } else if (clicked < 30)
+        }
+        // the AnswerViews have a tag between 10 and 13
+        else if (clicked < 30)
         {
-            // click on an answer view
+            // click on an answer View
             answerView = (TextView) v.findViewById(clicked);
             answerView.setText(Integer.toString(numberClicked));
             int digit = clicked % 10;
             currentAnswer[digit] = numberClicked;
-
+            // reset the answer View so text becomes visible
             v.invalidate();
-        } else if (clicked == 101)
+        }
+        // the back button was pressed in the hypothesis screen
+        else if (clicked == 101)
         {
-            // TODO: create intent and go back to main
             // go back to main
-        } else if (clicked == 102)
+            super.onBackPressed();
+        }
+        // the 'verder' button was pressed in the hypothesis screen
+        else if (clicked == 102)
         {
             currentProblem = 0;
-            ProblemGenerator generator = new ProblemGenerator(manipulation, problemAmount);
+            // create new, bug specific problems
             problems = generator.createSpecificProblems(ratio, bugs);
             analyze.clearAnswerList();
             analyze.setProblems(problems);
-
+            // reset the interface to the problems
             createInterface();
 
-        } else if (currentProblem < problemAmount - 1)
+        }
+        // if the 'verder' button was clicked and there are new problems left, we show a problem
+        else if (currentProblem < problemAmount - 1)
         {
             // click on 'verder' button (get a new problem)
             analyze.enterAnswer(currentAnswer);
             currentProblem++;
 
             createInterface();
-        } else
+        }
+        // if all problems have been shown, we can start the analysis
+        else
         {
-            // if all problems have been shown
             analyze.enterAnswer(currentAnswer);
-            analyze.runAnalysis();
-            ratio = analyze.getRatio();
-            bugs = analyze.getSortedBugs();
-            bugsString = analyze.getBugsString(bugs);
-            occurrencesSorted = analyze.getOccurrencesSorted();
+            startAnalysis();
+        }
+    }
+
+    // do analysis and obtain more information about the bugs that were encountered
+    private void startAnalysis()
+    {
+        allProblems = generator.getAllProblems();
+        // run the analysis with the answers that were provided
+        analyze.runAnalysis();
+        // get the ratio of the bugs that occurred
+        ratio = analyze.getRatio();
+        // get the bugs that occurred, sorted by occurrence
+        bugs = analyze.getSortedBugs();
+        // get a string describing the bugs
+        bugsString = analyze.getBugsString(bugs);
+        // get the occurrences per bug
+        occurrencesSorted = analyze.getOccurrencesSorted();
+        occurrencesPerProblem = analyze.getOccurrencesPerProblemSorted();
+        // if bugs occurred, create a View which shows the analysis
+        if (ratio.length > 0)
+        {
             createHypothesisInterface();
-            int i = 0;
+        }
+        // otherwise we generate new problems and show those
+        else
+        {
+            currentProblem = 0;
+            problems = generator.generateNumbers();
+            analyze.clearAnswerList();
+            analyze.setProblems(problems);
+
+            createInterface();
         }
     }
 
     // a method that creates the entire UI by calling methods from UICreator.
-    public void createInterface()
+    private void createInterface()
     {
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
         currentLayout.removeAllViews();
 
-        interfaceCreator.createProblemLayout();
+        interfaceCreator.createLayouts();
 
         // create all the number buttons
         for (int i = 0; i < 10; i++)
@@ -147,10 +188,10 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             numberButton.setTag(i);
             numberButton.setOnClickListener(this);
         }
-        int widthScr = interfaceCreator.getDisplayWidth();
 
         // create the continue button
-        continueButton = interfaceCreator.createButton("Verder", widthScr - 500, 80, 400, 150);
+        RelativeLayout topLayout = interfaceCreator.getTopLayout();
+        continueButton = interfaceCreator.createButton("Verder", topLayout, 1);
         continueButton.setTag(30);
         continueButton.setOnClickListener(this);
 
@@ -174,36 +215,44 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         }
     }
 
-    /**
-     * Creates the entire interface that will be shown after all answers are provided.
-     */
-    public void createHypothesisInterface()
+    //Creates the entire interface that will be shown after all answers are provided.
+    private void createHypothesisInterface()
     {
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
         currentLayout.removeAllViews();
 
+        MoreInfoUICreator moreInfoUICreator = new MoreInfoUICreator(this.getApplicationContext(), this);
+
         // create a layout in which more info can be shown
-        moreInfo = interfaceCreator.addMoreInfoLayout();
+        moreInfo = moreInfoUICreator.addMoreInfoLayout();
         moreInfo.setOnTouchListener(this);
-        moreInfo.setVisibility(View.INVISIBLE);
 
         // create a layout to which a histogram of the occurrence of each bug can be shown
-        histogram = interfaceCreator.addMoreInfoLayout();
+        histogram = moreInfoUICreator.addMoreInfoLayout();
         histogram.setOnTouchListener(this);
 
-        interfaceCreator.addHistogram(ratio, highlighted);
-        interfaceCreator.addAmountBug(amountOfSpecificBug);
-        interfaceCreator.addBugLayout();
-//        interfaceCreator.addMoreInfo(problems);
+        // make sure that when histogram view is in the foreground, it stays there
+        if (histogramVisible)
+        {
+            moreInfo.setVisibility(View.INVISIBLE);
+            histogram.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            moreInfo.setVisibility(View.VISIBLE);
+            histogram.setVisibility(View.INVISIBLE);
+        }
+
+        moreInfoUICreator.addHistogram(ratio, highlighted);
+        moreInfoUICreator.addAmountBug(amountOfSpecificBug);
+        moreInfoUICreator.addBugLayout();
+        moreInfoUICreator.addMoreInfo(allProblems, occurrencesPerProblem, highlighted, bugs, moreInfo);
 
         // create two navigation buttons
-        int widthScr = interfaceCreator.getDisplayWidth();
-        int heightScr = interfaceCreator.getDisplayHeight();
-        int yPosition = heightScr - 300;
-        int widthButton = widthScr / 2 - 100;
-
-        Button backButton = interfaceCreator.createButton("Terug",  10, yPosition, widthButton, 150);
-        Button continueButton = interfaceCreator.createButton("Verder",  widthButton + 110, yPosition, widthButton, 150);
+        moreInfoUICreator.addBottomLayout();
+        RelativeLayout bottomLayout = moreInfoUICreator.getBottomLayout();
+        Button backButton = moreInfoUICreator.createButton("Terug",  bottomLayout, 0);
+        Button continueButton = moreInfoUICreator.createButton("Verder",  bottomLayout, 1);
 
         backButton.setTag(101);
         continueButton.setTag(102);
@@ -212,10 +261,20 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         continueButton.setOnClickListener(this);
 
         // create a list of Strings describing all the bugs
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.bug_list_item,
+        adapterBugs = new ArrayAdapter<String>(this, R.layout.bug_list_item,
                 bugsString);
-        AdapterView adapterView = interfaceCreator.addListView(adapter);
+        adapterHelp = new ArrayAdapter<String>(this, R.layout.bug_list_item,
+                analyze.getSuggestionStrings());
+        if (bugListVisible)
+        {
+            adapterView = moreInfoUICreator.addListView(adapterBugs);
+        }
+        else
+        {
+            adapterView = moreInfoUICreator.addListView(adapterHelp);
+        }
         adapterView.setOnItemClickListener(this);
+        adapterView.setOnTouchListener(this);
     }
 
     // highlight a bar in the histogram after its corresponding bug was clicked
@@ -224,10 +283,10 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     {
         highlighted = i;
         amountOfSpecificBug = occurrencesSorted[i];
-        //TODO: make sure that when in more info view, it does not automatically switch to histogram.
         createHypothesisInterface();
     }
 
+    // implement a swipe function on the histogram / more info view
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
@@ -240,13 +299,29 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             // if the difference is greater than 100: change view
             if (Math.abs(xUp - xDown) > 100)
             {
+                // if x is smaller at the end, the current view is swiped to the left
                 if (xUp < xDown)
                 {
-                    goRight();
+                    // check whether it was the histogram View or the ListView that was swiped
+                    if (view instanceof RelativeLayout)
+                    {
+                        goMoreInfo();
+                    }
+                    else
+                    {
+                        goHelpList();
+                    }
                 }
                 else
                 {
-                    goLeft();
+                    if (view instanceof RelativeLayout)
+                    {
+                        goHistogram();
+                    }
+                    else
+                    {
+                        goBugsDescription();
+                    }
                 }
             }
 
@@ -254,42 +329,33 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         return false;
     }
 
-    public void goLeft()
+    // go to the histogram
+    private void goHistogram()
     {
         histogram.setVisibility(View.VISIBLE);
         moreInfo.setVisibility(View.INVISIBLE);
+        histogramVisible = true;
     }
 
-    public void goRight()
+    // go to the more info screen
+    private void goMoreInfo()
     {
         histogram.setVisibility(View.INVISIBLE);
         moreInfo.setVisibility(View.VISIBLE);
+        histogramVisible = false;
     }
 
-
-    /**
-     * I do not use these methods, therefore I put them in the bottom of my code.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
+    // go to the bugs description
+    private void goBugsDescription()
     {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.reken, menu);
-        return true;
+        adapterView.setAdapter(adapterBugs);
+        bugListVisible = true;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    // go to the help list
+    private void goHelpList()
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        adapterView.setAdapter(adapterHelp);
+        bugListVisible = false;
     }
 }

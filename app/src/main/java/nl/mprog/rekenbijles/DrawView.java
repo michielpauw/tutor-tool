@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.view.View;
 
 /**
- * Created by michielpauw on 09/01/15.
+ * Created by Michiel Pauw on 09/01/15.
  * A class which basically draws to circles where the answers should be entered. A TextView with
  * background would either make the text too small, or not aligned properly.
  */
@@ -17,11 +17,7 @@ public class DrawView extends View {
     private int amount;
     private int width;
     private int xOriginal;
-    private int xCurrentlySelected;
-    private int yCurrentlySelected;
     private int type;
-    private int widthView;
-    private int heightView;
     private float[] ratio;
     private int rectangleWidth;
     private int widthFull;
@@ -49,12 +45,15 @@ public class DrawView extends View {
                 x = xOriginal + i * width;
                 canvas.drawCircle(x, y, radius, paint);
             }
-        } else if (type == 1)
+        }
+        // create the rectangles which form the histogram bars
+        else if (type == 1)
         {
             Paint paint = new Paint();
             for (int i = 0; i < amountBugs; i++)
             {
                 paint.setColor(getResources().getColor(R.color.accent));
+                // give one bar a highlighted color if it's clicked
                 if (i == highlighted)
                 {
                     paint.setColor(getResources().getColor(R.color.primary1));
@@ -74,6 +73,7 @@ public class DrawView extends View {
     {
         amountBugs = ratio_in.length;
         ratio = ratio_in;
+        // the histogram legend takes up 100px of space
         heightFull = heightView - 100;
         widthFull = widthView - 20;
         highlighted = highlighted_in;
@@ -100,16 +100,6 @@ public class DrawView extends View {
     {
         x = xIn;
         xOriginal = xIn;
-    }
-
-    public void setXCurrentlySelected(int xIn)
-    {
-        xCurrentlySelected = xIn;
-    }
-
-    public void setYCurrentlySelected(int yIn)
-    {
-        yCurrentlySelected = yIn;
     }
 
     public void setY(int yIn)

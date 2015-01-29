@@ -1,7 +1,7 @@
 package nl.mprog.rekenbijles;
 
 /**
- * Created by michielpauw on 08/01/15.
+ * Created by Michiel Pauw on 08/01/15.
  * A very simple MainActivity with a very simple ListView.
  */
 
@@ -24,11 +24,10 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // create a ListView which shows a list with the possible manipulations
         String[] manipulations = this.getResources().getStringArray(R.array.manipulations);
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item,
                 manipulations);
-
         setListAdapter(adapter);
         ListView l = this.getListView();
         TextView text = (TextView) this.findViewById(R.id.textView);
@@ -37,34 +36,11 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemClic
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id)
     {
         Intent intent = new Intent(this, ProblemActivity.class);
-        String manipulation = Integer.toString(position);
+        String manipulation = Integer.toString(1);
         intent.putExtra("manipulation", manipulation);
         startActivity(intent);
-        finish();
     }
 }

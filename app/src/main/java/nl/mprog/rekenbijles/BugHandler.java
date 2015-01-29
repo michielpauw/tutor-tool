@@ -1,18 +1,17 @@
 package nl.mprog.rekenbijles;
 
 /**
- * Created by michielpauw on 12/01/15.
+ * Created by Michiel Pauw on 12/01/15.
+ * This class creates a list of booleans which tells which gates should be probed in the next
+ * iteration.
  */
 
 import java.util.ArrayList;
 
-public class FindBugs {
+public class BugHandler {
 
     private int[] problems;
-    private int[][] answers;
-    private int bugAmount = 20;
-    protected int amountGates = 21;
-    private boolean[] noBugs = new boolean[amountGates];
+    protected int amountGates;
     private ArrayList<int[]> bugs;
 
 
@@ -27,13 +26,8 @@ public class FindBugs {
 
     public boolean[] bugsProbe;
 
-    private int toCheckLeft = amountGates;
     private int[] currentGatesProbed;
     private boolean continueAnalysis = true;
-
-    private int[] currentlyProbedIndex;
-    private int currentProbedAmount;
-    private int currentBug;
 
     private int maxBugLength;
     private boolean answerAnalysis;
@@ -41,15 +35,16 @@ public class FindBugs {
     private IterationGates iteration;
 
 
-    public FindBugs(int[] problem_in, int[] answer_in)
+    public BugHandler(int[] problem_in, int[] answer_in, int amountGatesIn)
     {
         problems = problem_in;
-        digitsProblemOne = Tools.numberBreaker(problems[0], 3);
-        digitsProblemTwo = Tools.numberBreaker(problems[1], 3);
-        digitsCorrectAnswer = Tools.numberBreaker(problems[0] - problems[1], 3);
+        digitsProblemOne = Utilities.numberBreaker(problems[0], 3);
+        digitsProblemTwo = Utilities.numberBreaker(problems[1], 3);
+        digitsCorrectAnswer = Utilities.numberBreaker(problems[0] - problems[1], 3);
         answerProvided = answer_in;
         lengthOne = digitsProblemOne.length - 1;
         lengthTwo = digitsProblemTwo.length - 1;
+        amountGates = amountGatesIn;
     }
 
     public ArrayList<int[]> getBugs()
@@ -57,20 +52,13 @@ public class FindBugs {
         return bugs;
     }
 
-    /**
-     * @return a boolean that tells whether the answer was correct or not. If the answer is correct
-     * there will be no analysis.
-     */
+    // setup the analysis with initial values
     public boolean setupAnalysis(int maxBugLengthIn, boolean analysisIn)
     {
-        answerAnalysis = analysisIn;
-        maxBugLength = maxBugLengthIn;
+        // check whether there should be analysis, if an answer is correct, analysis is useless
         int answerLength = answerProvided.length;
-
-        answerManipulated = new int[answerLength];
-        continueAnalysis = true;
-        rightDigit = new boolean[3];
         boolean notAllTrue = false;
+        rightDigit = new boolean[3];
         for (int i = 0; i < answerLength; i++)
         {
             if (answerProvided[i] == digitsCorrectAnswer[i])
@@ -82,60 +70,60 @@ public class FindBugs {
                 rightDigit[i] = false;
             }
         }
-        bugs = new ArrayList<int[]>();
-        bugsProbe = new boolean[amountGates];
-        toCheckLeft = amountGates;
-        iteration = new IterationGates(amountGates, maxBugLength);
-        currentGatesProbed = new int[] {-1};
-        currentBug = 0;
-        currentlyProbedIndex = new int[] {0};
-        currentProbedAmount = 0;
-        return notAllTrue;
-    }
-
-    /**
-     * Handles a buggy configuration by removing gates from stillToCheck array.
-     *
-     * @param buggy if true the answer can be explained by the current bug configuration.
-     * @return whether analysis should be continued.
-     */
-    public boolean analyseSteps(boolean buggy)
-    {
-        // the chance of finding five problemBugsTotal responsible for a wrong answer is small, and it saves
-        // processing time to not consider problemBugsTotal of five gates or more
-        if (currentProbedAmount == 5 || !continueAnalysis)
+        if (!notAllTrue)
         {
             return false;
         }
 
-        // if a configuration can be held responsible for the wrong answer.
+        // check whether it's a problemAnalysis or an answerAnalysis
+        answerAnalysis = analysisIn;
+        maxBugLength = maxBugLengthIn;
+
+        answerManipulated = new int[answerLength];
+        continueAnalysis = true;
+
+        bugs = new ArrayList<int[]>();
+        bugsProbe = new boolean[amountGates];
+        iteration = new IterationGates(amountGates, maxBugLength);
+        currentGatesProbed = new int[] {-1};
+        return notAllTrue;
+    }
+
+    // if a configuration is buggy, the tuple of gates will be removed from the to test list
+    public boolean analyseSteps(boolean buggy)
+    {
+        // the chance of finding five problemBugsTotal responsible for a wrong answer is small
+        if (!continueAnalysis)
+        {
+            return false;
+        }
+
+        // if a configuration can be held responsible for the wrong answer...
         if (buggy)
         {
+            // a buggy tuple will be removed from the to test list, but not when we are testing
+            // for potential bugs in problems
             if (answerAnalysis)
             {
                 iteration.remove(currentGatesProbed);
             }
+            // the buggy tuple will be added to the bugs list
             int[] copyOfGates = new int[currentGatesProbed.length];
             System.arraycopy(currentGatesProbed, 0, copyOfGates, 0, currentGatesProbed.length);
             bugs.add(copyOfGates);
-            currentBug++;
-        } else
-        {
-            currentlyProbedIndex[currentProbedAmount]++;
         }
+        // return whether the analysis should continue
         return continueAnalysis;
     }
 
-    /**
-     * @return a boolean array which will have an entry true if a gate needs to be tested as
-     * buggy.
-     */
+    // returns an array of booleans corresponding to gates which will be true if they are buggy
     public boolean[] getProbes()
     {
         boolean[] probeArray = new boolean[amountGates];
 
         currentGatesProbed = iteration.nextToProbe();
 
+        // this means that there are no new configurations to test
         if (currentGatesProbed[0] == -2)
         {
             boolean[] toReturn = new boolean[0];
