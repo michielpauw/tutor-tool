@@ -33,7 +33,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     private int manipulation;
     private ProblemUICreator interfaceCreator;
     private AnswerAnalysis analyze;
-    private int problemAmount = 1;
+    private int problemAmount = 10;
     private int blockAmount = 3;
     private int[][] bugs;
     private float[] ratio;
