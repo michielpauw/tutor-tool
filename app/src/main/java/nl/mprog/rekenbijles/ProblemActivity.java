@@ -246,8 +246,9 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         moreInfoUICreator.addHistogram(ratio, highlighted);
         moreInfoUICreator.addAmountBug(amountOfSpecificBug);
         moreInfoUICreator.addBugLayout();
+        ArrayList<int[]> allAnswers = analyze.getAllAnswers();
         moreInfoUICreator.addMoreInfo(allProblems, occurrencesPerProblem, highlighted, bugs,
-                moreInfo);
+                moreInfo, allAnswers);
 
         // create two navigation buttons
         moreInfoUICreator.addBottomLayout();
@@ -326,7 +327,14 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             }
 
         }
-        return true;
+        if (view instanceof RelativeLayout)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     // go to the histogram

@@ -2,7 +2,13 @@ package nl.mprog.rekenbijles;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -160,7 +166,7 @@ public class MoreInfoUICreator extends UICreator {
 
     // add a view which shows problems in which a specific bug occurred
     public void addMoreInfo(ArrayList<int[]> problems, ArrayList<ArrayList<Integer>> occurrences,
-                            int highlighted, int[][] bugs, RelativeLayout layout)
+                            int highlighted, int[][] bugs, RelativeLayout layout, ArrayList<int[]> answers)
     {
         // get the problems which involved a bug that was clicked
         ArrayList<Integer> problemsWithBug = occurrences.get(highlighted);
@@ -174,7 +180,8 @@ public class MoreInfoUICreator extends UICreator {
             int length = problemsWithBug.size();
             int indexToShow = problemsWithBug.get(length - 1 - i);
             int[] problemToShow = problems.get(indexToShow);
-            createMoreInfo(problemToShow, bug, i, amountToShow, layout);
+            int[] answerToShow = answers.get(indexToShow);
+            createMoreInfo(problemToShow, bug, i, amountToShow, layout, answerToShow);
         }
     }
 
@@ -200,7 +207,7 @@ public class MoreInfoUICreator extends UICreator {
 
     // create a small RelativeLayout to which a TextView with the problem can be added
     public void createMoreInfo(int[] problem, int[] bug, int index, int total,
-                               RelativeLayout layout)
+                               RelativeLayout layout, int[] answer)
     {
         RelativeLayout moreInfoProblem = new RelativeLayout(activity);
         int width = widthMoreInfoLayout / total - 10;
@@ -214,14 +221,15 @@ public class MoreInfoUICreator extends UICreator {
         moreInfoProblem.setGravity(Gravity.CENTER);
         layout.addView(moreInfoProblem, moreInfoParams);
         // create a TextView containing the problem
-        TextView smallTextView = createSmallTextViews(problem);
+        TextView smallTextView = createSmallTextViews(problem, answer);
         // add the TextView to the correct RelativeLayout
         moreInfoProblem.addView(smallTextView);
     }
 
     // create a TextView with in simple text the problem we want to show
-    private TextView createSmallTextViews(int[] problemIn)
+    private TextView createSmallTextViews(int[] problem, int[] answer)
     {
+        String answerString = Utilities.arrayToString(answer);
         TextView problemText = new TextView(activity);
         problemText.setGravity(Gravity.RIGHT);
         problemText.setTextColor(activity.getResources().getColor(R.color.accent));
@@ -229,10 +237,11 @@ public class MoreInfoUICreator extends UICreator {
         String problemString = "";
         for (int i = 0; i < 2; i++)
         {
-            int problemPart = problemIn[i];
-            problemString += Integer.toString(problemPart) + "\n";
+            int problemPart = problem[i];
+            problemString += Integer.toString(problemPart) + "<br>";
         }
-        problemText.setText(problemString);
+        String toAdd = "<font color=3FF8A80>" + problemString + "</font> <font color=#ffffff>" + answerString + "</font>";
+        problemText.setText(Html.fromHtml(toAdd));
         return problemText;
     }
 }

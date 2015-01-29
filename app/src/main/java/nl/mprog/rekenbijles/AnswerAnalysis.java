@@ -14,12 +14,14 @@ public class AnswerAnalysis extends Analysis {
     private ArrayList<int[]> bugsSingle;
     private Activity activity;
     private String[] suggestionStrings;
+    private ArrayList<int[]> allAnswers;
 
     public AnswerAnalysis(int manipulation_in, int answer_amount, int[][] problems_in,
                           Activity activityIn)
     {
         super(manipulation_in, problems_in);
         answers = new ArrayList<int[]>();
+        allAnswers = new ArrayList<int[]>();
         activity = activityIn;
     }
 
@@ -28,10 +30,16 @@ public class AnswerAnalysis extends Analysis {
         answers = new ArrayList<int[]>();
     }
 
+    public ArrayList<int[]> getAllAnswers()
+    {
+        return allAnswers;
+    }
+
     // enter an answer that was provided
     public void enterAnswer(int[] answer)
     {
         answers.add(answer);
+        allAnswers.add(answer);
     }
 
     // given the answers that were provided, apply analysis

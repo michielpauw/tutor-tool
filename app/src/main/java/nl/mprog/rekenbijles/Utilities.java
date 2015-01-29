@@ -80,4 +80,29 @@ public class Utilities {
         }
         return manipulationString;
     }
+
+    // creates an integer out of an integer array
+    public static int arrayToInteger(int[] arrayIn)
+    {
+        String intString = "";
+        int length = arrayIn.length;
+        for (int i = 0; i < length; i++)
+        {
+            intString += arrayIn[i];
+        }
+        int toReturn = Integer.parseInt(intString);
+        return toReturn;
+    }
+
+    // creates a string out of an integer array
+    public static String arrayToString(int[] arrayIn)
+    {
+        String intString = "";
+        int length = arrayIn.length;
+        for (int i = 0; i < length; i++)
+        {
+            intString += arrayIn[i];
+        }
+        return intString;
+    }
 }
