@@ -8,7 +8,7 @@ import java.util.Arrays;
  * tells specific gates to perform buggy. It will check whether a buggy gate accounts for a buggy
  * answer entered by the user.
  */
-public class SubtractionAnalysis extends BugHandler {
+public class SubtractionAlgorithm extends BuggyHandler {
 
     private boolean comparerOne;
     private int borrowerFirstValueOne;
@@ -28,7 +28,7 @@ public class SubtractionAnalysis extends BugHandler {
     private boolean borrowerFirstBuggy;
     private boolean zeroerFirstBuggy;
 
-    public SubtractionAnalysis(int[] problem_in, int[] answer_in)
+    public SubtractionAlgorithm(int[] problem_in, int[] answer_in)
     {
         super(problem_in, answer_in, 21);
         comparerBuggy = false;

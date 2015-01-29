@@ -44,7 +44,7 @@ public class AnswerAnalysis extends Analysis {
         {
             int[] problem = problems[i];
             // run an analysis for this specific problem
-            SubtractionAnalysis subAnalysis = new SubtractionAnalysis(problem, answers.get(i));
+            SubtractionAlgorithm subAnalysis = new SubtractionAlgorithm(problem, answers.get(i));
             subAnalysis.runAnalysis(4, true);
             bugsSingle = subAnalysis.getBugs();
             handleBugs(bugsSingle, i);

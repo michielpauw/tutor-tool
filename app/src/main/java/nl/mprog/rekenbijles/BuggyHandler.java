@@ -8,7 +8,7 @@ package nl.mprog.rekenbijles;
 
 import java.util.ArrayList;
 
-public class BugHandler {
+public class BuggyHandler {
 
     private int[] problems;
     protected int amountGates;
@@ -35,7 +35,7 @@ public class BugHandler {
     private IterationGates iteration;
 
 
-    public BugHandler(int[] problem_in, int[] answer_in, int amountGatesIn)
+    public BuggyHandler(int[] problem_in, int[] answer_in, int amountGatesIn)
     {
         problems = problem_in;
         digitsProblemOne = Utilities.numberBreaker(problems[0], 3);
