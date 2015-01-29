@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * by comparing the amount of times a specific bug could occur and the amount of times a bug
  * actually occurs.
  */
-public class ProblemAnalysis extends Analysis{
+public class ProblemAnalysis extends Analysis {
 
     private ArrayList<int[]> bugs;
 

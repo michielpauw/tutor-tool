@@ -8,9 +8,6 @@ import java.util.Arrays;
  * A class which delegates each manipulation to its supposed analysis.
  */
 public class Analysis {
-
-    private int manipulation;
-
     protected int[][] problems;
     protected ArrayList<int[]> uniqueBugs;
     protected ArrayList<Integer> occurrences;
@@ -25,7 +22,6 @@ public class Analysis {
     public Analysis(int manipulation_in, int[][] problems_in)
     {
         totalAmountBugs = 0;
-        manipulation = manipulation_in;
         problems = problems_in;
         uniqueBugs = new ArrayList<int[]>();
         occurrences = new ArrayList<Integer>();
@@ -69,8 +65,6 @@ public class Analysis {
             }
         }
     }
-
-
 
     // check whether a specific bug was already added to the list
     private boolean alreadyAdded(int[] bug)

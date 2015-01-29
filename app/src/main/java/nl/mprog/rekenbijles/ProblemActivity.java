@@ -221,7 +221,8 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         RelativeLayout currentLayout = (RelativeLayout) this.findViewById(R.id.root_layout);
         currentLayout.removeAllViews();
 
-        MoreInfoUICreator moreInfoUICreator = new MoreInfoUICreator(this.getApplicationContext(), this);
+        MoreInfoUICreator moreInfoUICreator = new MoreInfoUICreator(this.getApplicationContext(),
+                this);
 
         // create a layout in which more info can be shown
         moreInfo = moreInfoUICreator.addMoreInfoLayout();
@@ -236,8 +237,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         {
             moreInfo.setVisibility(View.INVISIBLE);
             histogram.setVisibility(View.VISIBLE);
-        }
-        else
+        } else
         {
             moreInfo.setVisibility(View.VISIBLE);
             histogram.setVisibility(View.INVISIBLE);
@@ -246,13 +246,14 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         moreInfoUICreator.addHistogram(ratio, highlighted);
         moreInfoUICreator.addAmountBug(amountOfSpecificBug);
         moreInfoUICreator.addBugLayout();
-        moreInfoUICreator.addMoreInfo(allProblems, occurrencesPerProblem, highlighted, bugs, moreInfo);
+        moreInfoUICreator.addMoreInfo(allProblems, occurrencesPerProblem, highlighted, bugs,
+                moreInfo);
 
         // create two navigation buttons
         moreInfoUICreator.addBottomLayout();
         RelativeLayout bottomLayout = moreInfoUICreator.getBottomLayout();
-        Button backButton = moreInfoUICreator.createButton("Terug",  bottomLayout, 0);
-        Button continueButton = moreInfoUICreator.createButton("Verder",  bottomLayout, 1);
+        Button backButton = moreInfoUICreator.createButton("Terug", bottomLayout, 0);
+        Button continueButton = moreInfoUICreator.createButton("Verder", bottomLayout, 1);
 
         backButton.setTag(101);
         continueButton.setTag(102);
@@ -268,8 +269,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
         if (bugListVisible)
         {
             adapterView = moreInfoUICreator.addListView(adapterBugs);
-        }
-        else
+        } else
         {
             adapterView = moreInfoUICreator.addListView(adapterHelp);
         }
@@ -290,10 +290,13 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
+        {
             // get the x value of where the screen was clicked first
             xDown = motionEvent.getX();
-        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+        }
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP)
+        {
             // get the x value of where the screen was released
             xUp = motionEvent.getX();
             // if the difference is greater than 100: change view
@@ -306,19 +309,16 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
                     if (view instanceof RelativeLayout)
                     {
                         goMoreInfo();
-                    }
-                    else
+                    } else
                     {
                         goHelpList();
                     }
-                }
-                else
+                } else
                 {
                     if (view instanceof RelativeLayout)
                     {
                         goHistogram();
-                    }
-                    else
+                    } else
                     {
                         goBugsDescription();
                     }
@@ -326,7 +326,7 @@ public class ProblemActivity extends ActionBarActivity implements View.OnClickLi
             }
 
         }
-        return false;
+        return true;
     }
 
     // go to the histogram

@@ -1,17 +1,10 @@
 package nl.mprog.rekenbijles;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 /**
  * Created by michielpauw on 06/01/15.
@@ -55,8 +48,7 @@ public class UICreator {
         if (alignment == 0)
         {
             paramsTopButton.leftMargin = 0;
-        }
-        else
+        } else
         {
             paramsTopButton.leftMargin = widthScr - 500;
         }

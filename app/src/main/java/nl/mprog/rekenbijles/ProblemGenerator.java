@@ -7,7 +7,6 @@ package nl.mprog.rekenbijles;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class ProblemGenerator {
@@ -132,7 +131,7 @@ public class ProblemGenerator {
         {
             leftBorder = ratioCumulative[currentIndex];
             rightBorder = ratioCumulative[currentIndex + 1];
-            currentIndex ++;
+            currentIndex++;
             return getBugToTest(leftBorder, rightBorder);
         }
     }
@@ -143,7 +142,8 @@ public class ProblemGenerator {
         int[][] problemList = new int[1][];
 
         boolean explanation = false;
-        do {
+        do
+        {
             // loop until we found a problem which could test the bug
             problemList[0] = generateProblem();
             ProblemAnalysis analyzeThisProblem = new ProblemAnalysis(manipulation, problemList);

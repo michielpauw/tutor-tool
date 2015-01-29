@@ -78,9 +78,11 @@ public class SubtractionAnalysis extends BugHandler {
         // answer provided
         if (analysis)
         {
-            // if this configuration of problemBugsTotal gives wrong digits at the same places as the answer given,
+            // if this configuration of problemBugsTotal gives wrong digits at the same places as
+            // the answer given,
             // then we say the configuration can be responsible for the wrong answer.
-            if (Arrays.equals(rightDigitsAnalysis, rightDigit) && !Arrays.equals(rightDigit, allRight))
+            if (Arrays.equals(rightDigitsAnalysis, rightDigit) && !Arrays.equals(rightDigit,
+                    allRight))
             {
                 return true;
             } else
@@ -94,8 +96,7 @@ public class SubtractionAnalysis extends BugHandler {
             if (!Arrays.equals(rightDigitsAnalysis, allRight))
             {
                 return true;
-            }
-            else
+            } else
             {
                 return false;
             }
@@ -120,14 +121,16 @@ public class SubtractionAnalysis extends BugHandler {
                 digitsProblemOne[lengthOne - 1], bugsProbe[4], bugsProbe[15]);
         zeroerSecondValueOne = zeroerSecondValue(borrowerFirstValueOne,
                 digitsProblemOne[lengthOne - 1], bugsProbe[5]);
-        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1], bugsProbe[6], bugsProbe[16]);
+        comparerTwo = comparer(zeroerSecondValueOne, digitsProblemTwo[lengthTwo - 1],
+                bugsProbe[6], bugsProbe[16]);
         borrowerFirstValueTwo = borrowerFirstValue(comparerTwo, bugsProbe[7], bugsProbe[17]);
         borrowerSecondValueTwo = borrowerSecondValue(comparerTwo, zeroerSecondValueOne,
                 bugsProbe[8], bugsProbe[19]);
         differencerThree = differencer(borrowerSecondValueTwo, digitsProblemTwo[lengthTwo - 1],
                 bugsProbe[9]);
         buggyAnswer[1] = differencerThree;
-        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, bugsProbe[10], bugsProbe[20]);
+        orOne = orOperator(zeroerFirstValueOne, borrowerFirstValueTwo, bugsProbe[10],
+                bugsProbe[20]);
         differencerOne = differencer(digitsProblemOne[lengthOne - 2], orOne, bugsProbe[11]);
         differencerTwo = differencer(differencerOne, digitsProblemTwo[lengthTwo - 2],
                 bugsProbe[12]);
@@ -155,7 +158,8 @@ public class SubtractionAnalysis extends BugHandler {
     }
 
     // decide whether the number on top is greater or equal to the number below
-    private boolean comparer(int digitOne, int digitTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private boolean comparer(int digitOne, int digitTwo, boolean buggyAlwaysTrue,
+                             boolean buggyAlwaysFalse)
     {
         // if gate buggy and input buggy, the output may not be buggy
         if (buggyAlwaysTrue || buggyAlwaysFalse)
@@ -184,15 +188,15 @@ public class SubtractionAnalysis extends BugHandler {
         if (((Math.abs(digitOne) >= Math.abs(digitTwo)) || buggyAlwaysTrue) && !buggyAlwaysFalse)
         {
             return true;
-        }
-        else
+        } else
         {
             return false;
         }
     }
 
     // if the top number is smaller, it needs to be incremented by ten (borrow)
-    private int borrowerFirstValue(boolean comparer, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private int borrowerFirstValue(boolean comparer, boolean buggyAlwaysTrue,
+                                   boolean buggyAlwaysFalse)
     {
         // if gate buggy and input buggy, the output may not be buggy
         if (buggyAlwaysTrue || buggyAlwaysFalse)
@@ -225,7 +229,8 @@ public class SubtractionAnalysis extends BugHandler {
         }
     }
 
-    private int borrowerSecondValue(boolean comparer, int digitOne, boolean buggyNeverIncrement, boolean buggyAlwaysIncrement)
+    private int borrowerSecondValue(boolean comparer, int digitOne, boolean buggyNeverIncrement,
+                                    boolean buggyAlwaysIncrement)
     {
         // if the input is faulty and the gate buggy, we can assume the output may be non-buggy.
         if (buggyNeverIncrement || buggyAlwaysIncrement)
@@ -258,8 +263,7 @@ public class SubtractionAnalysis extends BugHandler {
             {
                 // a negative digit represents a currently buggy digit
                 return -digitOne - 10;
-            }
-            else
+            } else
             {
                 return digitOne + 10;
             }
@@ -270,8 +274,7 @@ public class SubtractionAnalysis extends BugHandler {
             if (!comparer)
             {
                 return -digitOne;
-            }
-            else
+            } else
             {
                 return digitOne;
             }
@@ -314,7 +317,8 @@ public class SubtractionAnalysis extends BugHandler {
         }
     }
 
-    private int zeroerFirstValue(int borrow, int digit, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private int zeroerFirstValue(int borrow, int digit, boolean buggyAlwaysTrue,
+                                 boolean buggyAlwaysFalse)
     {
         // once again, if input is faulty and gate is buggy, it may return a correct value
         if (buggyAlwaysFalse || buggyAlwaysTrue)
@@ -405,7 +409,8 @@ public class SubtractionAnalysis extends BugHandler {
         }
     }
 
-    private int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggyAlwaysTrue, boolean buggyAlwaysFalse)
+    private int orOperator(int orBooleanOne, int orBooleanTwo, boolean buggyAlwaysTrue,
+                           boolean buggyAlwaysFalse)
     {
         // if input is faulty and gate is buggy, it may return a correct value
         if (buggyAlwaysFalse || buggyAlwaysTrue)

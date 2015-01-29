@@ -15,7 +15,8 @@ public class AnswerAnalysis extends Analysis {
     private Activity activity;
     private String[] suggestionStrings;
 
-    public AnswerAnalysis(int manipulation_in, int answer_amount, int[][] problems_in, Activity activityIn)
+    public AnswerAnalysis(int manipulation_in, int answer_amount, int[][] problems_in,
+                          Activity activityIn)
     {
         super(manipulation_in, problems_in);
         answers = new ArrayList<int[]>();
@@ -27,11 +28,7 @@ public class AnswerAnalysis extends Analysis {
         answers = new ArrayList<int[]>();
     }
 
-    /**
-     * Enter a given answer to answers list.
-     *
-     * @param answer the answer to be added
-     */
+    // enter an answer that was provided
     public void enterAnswer(int[] answer)
     {
         answers.add(answer);
@@ -51,7 +48,7 @@ public class AnswerAnalysis extends Analysis {
             subAnalysis.runAnalysis(4, true);
             bugsSingle = subAnalysis.getBugs();
             handleBugs(bugsSingle, i);
-            problemNumber ++;
+            problemNumber++;
         }
     }
 
@@ -90,8 +87,7 @@ public class AnswerAnalysis extends Analysis {
                 if (j == lengthBug - 2)
                 {
                     currentBugEntry = tempBug2 + " en ";
-                }
-                else if (j < lengthBug - 2)
+                } else if (j < lengthBug - 2)
                 {
                     currentBugEntry = tempBug2 + ", ";
                 }
@@ -113,7 +109,8 @@ public class AnswerAnalysis extends Analysis {
     // get a String which briefly describes the way a bug can be solved
     public String getSuggestionString(int bug)
     {
-        String[] possibleSubtractionSuggestions = activity.getResources().getStringArray(R.array.help);
+        String[] possibleSubtractionSuggestions = activity.getResources().getStringArray(R.array
+                .help);
         return possibleSubtractionSuggestions[bug];
     }
 

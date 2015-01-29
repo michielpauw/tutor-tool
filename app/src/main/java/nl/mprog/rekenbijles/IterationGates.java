@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * Created by Michiel Pauw on 20/01/15.
  * This class is responsible for finding tuples of gates which will be probed in the next
  * iteration.
- *
  */
 public class IterationGates {
     private ArrayList<Integer> indices;
@@ -65,7 +64,7 @@ public class IterationGates {
         return toReturn;
     }
 
-     // increments the indices in the correct way
+    // increments the indices in the correct way
     private void increment()
     {
         int currentIndex = indices.get(currentN - 1);

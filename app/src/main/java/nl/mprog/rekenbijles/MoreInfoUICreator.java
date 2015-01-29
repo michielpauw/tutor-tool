@@ -159,7 +159,8 @@ public class MoreInfoUICreator extends UICreator {
     }
 
     // add a view which shows problems in which a specific bug occurred
-    public void addMoreInfo(ArrayList<int[]> problems, ArrayList<ArrayList<Integer>> occurrences, int highlighted, int[][] bugs, RelativeLayout layout)
+    public void addMoreInfo(ArrayList<int[]> problems, ArrayList<ArrayList<Integer>> occurrences,
+                            int highlighted, int[][] bugs, RelativeLayout layout)
     {
         // get the problems which involved a bug that was clicked
         ArrayList<Integer> problemsWithBug = occurrences.get(highlighted);
@@ -186,8 +187,7 @@ public class MoreInfoUICreator extends UICreator {
         if (amount == 1)
         {
             header.setText("Probleem met deze bug");
-        }
-        else
+        } else
         {
             header.setText("Problemen met deze bug");
         }
@@ -199,7 +199,8 @@ public class MoreInfoUICreator extends UICreator {
     }
 
     // create a small RelativeLayout to which a TextView with the problem can be added
-    public void createMoreInfo(int[] problem, int[] bug, int index, int total, RelativeLayout layout)
+    public void createMoreInfo(int[] problem, int[] bug, int index, int total,
+                               RelativeLayout layout)
     {
         RelativeLayout moreInfoProblem = new RelativeLayout(activity);
         int width = widthMoreInfoLayout / total - 10;
